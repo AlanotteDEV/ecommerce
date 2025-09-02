@@ -1,0 +1,27 @@
+{
+  "manga": [
+    {
+      "id": 101,
+      "title": "Jujutsu Kaisen Vol. 1",
+      "description": "...",
+      "price": "12,90€",
+      "mainImageUrl": "https://placehold.co/400x600/e74c3c/ffffff?text=Jujutsu+Kaisen",
+      "additionalImages": []
+    },
+    {
+      "title": "One Piece",
+      "category": "manga",
+      "price": "5,20",
+      "description": "",
+      "mainImageUrl": "https://upload.wikimedia.org/wikipedia/it/5/5e/One_Piece_vol_1.jpg",
+      "additionalImages": [],
+      "id": 1756812641449
+    }
+  ],
+  "fumettiAmericani": [],
+  "tcg": [],
+  "giochiTavolo": [],
+  "actionFigure": [],
+  "funkoPop": [],
+  "libri": []
+}
