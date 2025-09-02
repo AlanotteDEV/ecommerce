@@ -29,1042 +29,753 @@
         /* Stile "fumetto" per bordi e ombre */
         .comic-border {
             border: 4px solid #000;
-        }
-        .comic-shadow {
-            box-shadow: 8px 8px 0px #2c3e50;
-        }
-        .comic-shadow-sm {
-             box-shadow: 4px 4px 0px #000;
+            box-shadow: 6px 6px 0px 0px #000;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        /* Stile per i tavoli da gioco */
-        .table.available { background-color: #2ecc71; }
-        .table.booked { background-color: #e74c3c; cursor: not-allowed; }
-        .table.selected {
-            outline: 4px solid #3498db;
-            box-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
-        }
-        
-        /* Nasconde le frecce per input di tipo number */
-        input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
+        .comic-border:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 4px 4px 0px 0px #000;
         }
 
-        /* Stile per il caricamento immagini */
-        .file-upload-container {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
+        .dropdown-menu {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            transform-origin: top;
         }
-        .file-upload-container input[type="file"] {
-            position: absolute;
-            left: 0;
-            top: 0;
+
+        .dropdown-menu.hidden {
             opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
+            transform: scaleY(0);
         }
 
-        /* Stili per le fasce orarie */
-        .time-slot {
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: center;
-            font-weight: bold;
-            transition: all 0.2s ease;
+        .dropdown-menu:not(.hidden) {
+            opacity: 1;
+            transform: scaleY(1);
         }
 
-        .time-slot.available {
-            background-color: #2ecc71;
-            color: white;
+        .rotate-180 {
+            transform: rotate(180deg);
         }
 
-        .time-slot.booked {
-            background-color: #e74c3c;
-            color: white;
-            cursor: not-allowed;
+        .fixed-cart-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
         }
 
-        .time-slot.selected-slot {
-            outline: 3px solid #3498db;
-            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        .comic-button {
+            border: 2px solid #000;
+            box-shadow: 4px 4px 0px 0px #000;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .time-slots-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 12px;
+        .comic-button:hover {
+            transform: translate(1px, 1px);
+            box-shadow: 3px 3px 0px 0px #000;
+        }
+        .comic-button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px 0px #000;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
-
-    <header class="bg-[#e74c3c] text-white comic-border border-b-8 sticky top-0 z-50">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
-            <a href="#" class="home-link"><h1 class="text-2xl md:text-4xl tracking-wider" style="text-shadow: 2px 2px #34495e;">Manbaga</h1></a>
-            
-            <nav class="hidden lg:flex items-center space-x-6 text-lg">
-                <a href="#" class="home-link hover:text-gray-900 transition-colors">Home</a>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <header class="bg-blue-500 text-white p-4 shadow-md bebas-font sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-3xl" id="home-btn">MANBAGA</a>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="#" class="text-xl hover:text-gray-200 transition-colors" data-page="home">Home</a>
                 <div class="relative group">
-                    <button class="flex items-center hover:text-gray-900 transition-colors py-2">
-                        <span>Prodotti</span>
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <button class="text-xl flex items-center hover:text-gray-200 transition-colors" id="products-btn">
+                        Prodotti
+                        <svg class="w-4 h-4 ml-1 transform transition-transform duration-300" id="products-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
                     </button>
-                    <div class="absolute hidden group-hover:block bg-white text-black rounded-md comic-border comic-shadow-sm w-48 py-2 z-10 pt-2">
-                        <a href="#" class="dropdown-item block px-4 py-2 hover:bg-gray-200" data-category="manga">Manga</a>
-                        <a href="#" class="dropdown-item block px-4 py-2 hover:bg-gray-200" data-category="fumettiAmericani">Fumetti americani</a>
-                        <a href="#" class="dropdown-item block px-4 py-2 hover:bg-gray-200" data-category="tcg">TCG</a>
-                        <a href="#" class="dropdown-item block px-4 py-2 hover:bg-gray-200" data-category="giochiTavolo">Giochi da tavolo</a>
-                        <a href="#" class="dropdown-item block px-4 py-2 hover:bg-gray-200" data-category="actionFigure">Action figure</a>
-                        <a href="#" class="dropdown-item block px-4 py-2 hover:bg-gray-200" data-category="funkoPop">Funko POP</a>
-                        <a href="#" class="dropdown-item block px-4 py-2 hover:bg-gray-200" data-category="libri">Libri</a>
+                    <div class="dropdown-menu absolute hidden mt-2 w-48 bg-white text-gray-800 rounded shadow-lg z-10">
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="manga">Manga</a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="fumettiAmericani">Fumetti Americani</a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="tcg">TCG</a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="giochiTavolo">Giochi da Tavolo</a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="actionFigure">Action Figure</a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="funkoPop">Funko Pop!</a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="libri">Libri</a>
                     </div>
                 </div>
-                <a href="#booking" class="hover:text-gray-900 transition-colors">Prenota Tavolo</a>
-                <a href="#" id="cart-btn" class="flex items-center space-x-2 hover:text-gray-900 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                    <span>Carrello (<span id="cart-count">0</span>)</span>
-                </a>
+                <a href="#" class="text-xl hover:text-gray-200 transition-colors" data-page="booking">Prenota il Tavolo</a>
+                <a href="#" class="text-xl hover:text-gray-200 transition-colors" data-page="admin">Admin</a>
             </nav>
-
-            <div class="hidden lg:flex items-center space-x-4">
-                 <a href="#" id="user-login-btn" class="bg-white text-[#e74c3c] px-4 py-2 rounded-lg bebas-font text-lg comic-shadow-sm border-2 border-black hover:bg-gray-200 transition-transform transform hover:scale-105">Accedi</a>
-                 <a href="#" id="admin-login-btn" class="bg-gray-800 text-white px-3 py-2 rounded-lg bebas-font text-md hover:bg-black transition-colors">Admin</a>
-            </div>
-
-            <button id="mobile-menu-btn" class="lg:hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </button>
-        </div>
-        <div id="mobile-menu" class="hidden lg:hidden px-4 pb-4 space-y-2">
-            <a href="#" class="home-link block text-lg py-2">Home</a>
-            <div>
-                <button id="mobile-products-btn" class="w-full text-left flex justify-between items-center text-lg py-2">
-                    <span>Prodotti</span>
-                    <svg id="mobile-products-arrow" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            <div class="flex items-center space-x-4 md:space-x-2">
+                <button id="cart-btn" class="text-xl relative hover:text-gray-200 transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-8.9-5h7.45c.75 0 1.41-.41 1.75-1.03L23.6 6.13c.2-.38.15-.83-.15-1.16C23.12 4.7 22.56 4.5 22 4.5H5.21l-.94-2.5C4.05 1.58 3.52 1.3 3 1.3H1v2h2c.32 0 .58.2.68.48l3.6 8.52c.28.66.92 1.1 1.63 1.1H15.9l-1.34 2H8.1zM10.15 13H15.9l-1.34-2H8.15l-1.5 3z"></path>
+                    </svg>
+                    <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">0</span>
                 </button>
-                <div id="mobile-products-submenu" class="hidden pl-4 mt-2 space-y-2">
-                    <a href="#" class="block text-md py-1" data-category="manga">Manga</a>
-                    <a href="#" class="block text-md py-1" data-category="fumettiAmericani">Fumetti americani</a>
-                    <a href="#" class="block text-md py-1" data-category="tcg">TCG</a>
-                    <a href="#" class="block text-md py-1" data-category="giochiTavolo">Giochi da tavolo</a>
-                    <a href="#" class="block text-md py-1" data-category="actionFigure">Action figure</a>
-                    <a href="#" class="block text-md py-1" data-category="funkoPop">Funko POP</a>
-                    <a href="#" class="block text-md py-1" data-category="libri">Libri</a>
-                </div>
+                <button id="mobile-menu-btn" class="text-xl md:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
             </div>
-            <a href="#booking" class="block text-lg py-2">Prenota Tavolo</a>
-            <a href="#" id="cart-btn-mobile" class="block text-lg py-2">Carrello (<span id="cart-count-mobile">0</span>)</a>
-            <a href="#" id="user-login-btn-mobile" class="block bg-white text-[#e74c3c] px-4 py-2 rounded-lg bebas-font text-lg text-center mt-2">Accedi / Registrati</a>
-            <a href="#" id="admin-login-btn-mobile" class="block bg-gray-800 text-white px-4 py-2 rounded-lg bebas-font text-lg text-center mt-2">Admin</a>
         </div>
     </header>
 
-    <main id="main-content" class="container mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-
-        <section class="bg-white p-8 rounded-lg comic-border comic-shadow text-center mb-16">
-            <h2 class="text-4xl md:text-5xl text-[#c0392b]" style="text-shadow: 2px 2px #bdc3c7;">Il Tuo Angolo di Paradiso Nerd</h2>
-            <p class="text-lg mt-4 max-w-3xl mx-auto">Esplora gli ultimi manga, colleziona figure esclusive e prenota un tavolo per sfidare i tuoi amici nel nostro spazio dedicato!</p>
-            <div class="mt-8">
-                <a href="#booking" class="bg-[#27ae60] text-white px-8 py-4 rounded-lg bebas-font text-2xl comic-shadow-sm border-2 border-black hover:bg-[#2ecc71] transition-transform transform hover:scale-105 inline-block">Prenota un Tavolo Ora!</a>
-            </div>
-        </section>
-
-        <section id="products" class="mb-16">
-            <h2 class="text-4xl text-center text-[#c0392b] mb-8" style="text-shadow: 2px 2px #bdc3c7;">Prodotti in Evidenza</h2>
-            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                </div>
-        </section>
-
-        <section id="booking" class="bg-white p-6 sm:p-8 rounded-lg comic-border comic-shadow">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                <div class="text-center">
-                    <h3 class="text-3xl text-[#34495e]">Prenota il tuo Tavolo da Gioco</h3>
-                    <p class="mt-2 mb-6">I tavoli disponibili sono verdi. Clicca sul tavolo che vuoi prenotare.</p>
-                    <div id="table-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-4 max-w-md mx-auto">
-                        </div>
-                </div>
-                <div id="time-slot-selection" class="bg-gray-100 p-6 rounded-lg border-2 border-dashed border-gray-400 hidden">
-                    <h4 class="text-2xl font-bold text-center mb-4">Seleziona data e ora per Tavolo <span id="selected-table" class="text-[#3498db]"></span></h4>
-                     <div class="mb-4">
-                        <label for="booking-date" class="block font-bold">Data:</label>
-                        <input type="date" id="booking-date" name="date" required class="w-full p-2 rounded comic-border border-2 focus:outline-none focus:ring-2 focus:ring-[#3498db]">
-                    </div>
-                    <div id="time-slots-container" class="time-slots-grid">
-                        </div>
-                </div>
-                <div id="booking-details" class="bg-gray-100 p-6 rounded-lg border-2 border-dashed border-gray-400 hidden">
-                    <h4 class="text-2xl font-bold text-center mb-4">Dettagli per Tavolo <span id="final-selected-table" class="text-[#3498db]"></span> - <span id="final-selected-time" class="text-[#3498db]"></span></h4>
-                    <form id="booking-form" class="space-y-4">
-                        <input type="hidden" id="tableId-input" name="tableId">
-                        <input type="hidden" id="date-input" name="date">
-                        <input type="hidden" id="time-input" name="time">
-                        <div>
-                            <label for="name" class="block font-bold">Nome:</label>
-                            <input type="text" id="name" name="name" required class="w-full p-2 rounded comic-border border-2 focus:outline-none focus:ring-2 focus:ring-[#3498db]">
-                        </div>
-                        <div>
-                            <label for="surname" class="block font-bold">Cognome:</label>
-                            <input type="text" id="surname" name="surname" required class="w-full p-2 rounded comic-border border-2 focus:outline-none focus:ring-2 focus:ring-[#3498db]">
-                        </div>
-                        <div>
-                            <label for="end-time" class="block font-bold">Orario Fine:</label>
-                            <input type="time" id="end-time" name="endTime" required class="w-full p-2 rounded comic-border border-2 focus:outline-none focus:ring-2 focus:ring-[#3498db]">
-                        </div>
-                        <button type="submit" class="w-full bg-[#27ae60] text-white p-3 rounded-lg bebas-font text-xl comic-shadow-sm border-2 border-black hover:bg-[#2ecc71] transition-transform transform hover:scale-105">Conferma Prenotazione</button>
-                    </form>
+    <div id="mobile-menu" class="hidden md:hidden w-full bg-blue-500 text-white bebas-font transition-all duration-300 ease-in-out">
+        <div class="px-4 py-2 space-y-2">
+            <a href="#" class="block text-xl hover:bg-blue-600 p-2 rounded" data-page="home">Home</a>
+            <div class="relative">
+                <button id="mobile-products-btn" class="w-full text-left text-xl flex items-center justify-between hover:bg-blue-600 p-2 rounded">
+                    Prodotti
+                    <svg class="w-4 h-4 transform transition-transform duration-300" id="mobile-products-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="mobile-products-submenu" class="hidden mt-2 ml-4 w-full text-gray-800 rounded bg-white shadow-lg bebas-font">
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="manga">Manga</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="fumettiAmericani">Fumetti Americani</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="tcg">TCG</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="giochiTavolo">Giochi da Tavolo</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="actionFigure">Action Figure</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="funkoPop">Funko Pop!</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="libri">Libri</a>
                 </div>
             </div>
-        </section>
-    </main>
-
-    <section id="category-page" class="hidden container mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <h2 id="category-title" class="text-4xl text-center text-[#c0392b] mb-8" style="text-shadow: 2px 2px #bdc3c7;"></h2>
-        <div id="category-product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            </div>
-    </section>
-
-    <section id="product-detail-page" class="hidden container mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
-            <div class="flex flex-col items-center">
-                <img id="main-product-image" src="" alt="Immagine principale del prodotto" class="w-full h-auto max-h-[600px] object-contain rounded-lg comic-border mb-4">
-                <div id="thumbnail-gallery" class="flex space-x-2 overflow-x-auto w-full justify-center">
-                    </div>
-            </div>
-            <div class="bg-white p-6 rounded-lg comic-border comic-shadow">
-                <h2 id="product-detail-title" class="text-4xl text-[#34495e] mb-2"></h2>
-                <p id="product-detail-price" class="text-3xl font-bold text-[#e74c3c] mb-4"></p>
-                <div class="border-t border-gray-300 pt-4 mt-4">
-                    <h3 class="text-2xl bebas-font text-[#c0392b] mb-2">Descrizione Prodotto</h3>
-                    <p id="product-detail-description" class="text-gray-700 leading-relaxed"></p>
-                </div>
-                <button class="add-to-cart-btn mt-6 w-full bg-[#27ae60] text-white p-3 rounded-lg bebas-font text-xl comic-shadow-sm border-2 border-black hover:bg-[#2ecc71] transition-transform transform hover:scale-105" data-id="">Aggiungi al Carrello</button>
-            </div>
-        </div>
-    </section>
-
-    <div id="admin-panel" class="hidden container mx-auto px-4 sm:px-6 lg:px-8 mt-8 min-h-screen">
-        <h2 class="text-4xl text-center text-[#34495e] mb-8" style="text-shadow: 2px 2px #bdc3c7;">Pannello di Amministrazione</h2>
-        
-        <div class="flex border-b border-gray-300 mb-6">
-            <button class="tab-btn active-tab flex-1 py-2 px-4 text-lg font-bold text-center border-b-4 border-[#3498db] focus:outline-none transition-colors" data-tab="products">Gestione Prodotti</button>
-            <button class="tab-btn flex-1 py-2 px-4 text-lg font-bold text-center border-b-4 border-transparent hover:border-gray-400 focus:outline-none transition-colors" data-tab="bookings">Gestione Prenotazioni</button>
-        </div>
-
-        <div id="products-tab" class="tab-content">
-            <h3 class="text-2xl text-[#c0392b] mb-4">Prodotti</h3>
-            <div id="admin-product-list" class="space-y-4">
-                </div>
-            <button id="add-product-btn" class="mt-6 bg-[#27ae60] text-white p-3 rounded-lg bebas-font text-xl comic-shadow-sm border-2 border-black hover:bg-[#2ecc71] transition-transform transform hover:scale-105">Aggiungi Nuovo Prodotto</button>
-        </div>
-
-        <div id="bookings-tab" class="tab-content hidden">
-            <h3 class="text-2xl text-[#c0392b] mb-4">Prenotazioni</h3>
-            <div id="admin-booking-list" class="space-y-4">
-                </div>
+            <a href="#" class="block text-xl hover:bg-blue-600 p-2 rounded" data-page="booking">Prenota il Tavolo</a>
+            <a href="#" class="block text-xl hover:bg-blue-600 p-2 rounded" data-page="admin">Admin</a>
         </div>
     </div>
     
-    <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center hidden">
-        <div class="bg-white p-8 rounded-lg comic-border comic-shadow w-11/12 max-w-lg relative">
-            <button class="close-btn absolute top-2 right-4 text-3xl font-bold">&times;</button>
-            <h3 id="product-modal-title" class="text-3xl text-center text-[#e74c3c] mb-4">Aggiungi Prodotto</h3>
-            <form id="product-form" class="space-y-4">
-                <input type="hidden" id="product-id">
-                <div>
-                    <label for="product-title" class="block font-bold">Titolo:</label>
-                    <input type="text" id="product-title" required class="w-full p-2 rounded comic-border border-2">
-                </div>
-                <div>
-                    <label for="product-category" class="block font-bold">Categoria:</label>
-                    <select id="product-category" required class="w-full p-2 rounded comic-border border-2">
-                        <option value="manga">Manga</option>
-                        <option value="fumettiAmericani">Fumetti americani</option>
-                        <option value="tcg">TCG</option>
-                        <option value="giochiTavolo">Giochi da tavolo</option>
-                        <option value="actionFigure">Action figure</option>
-                        <option value="funkoPop">Funko POP</option>
-                        <option value="libri">Libri</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="product-price" class="block font-bold">Prezzo:</label>
-                    <input type="text" id="product-price" required class="w-full p-2 rounded comic-border border-2" placeholder="es. 12,99€">
-                </div>
-                <div>
-                    <label for="product-description" class="block font-bold">Descrizione:</label>
-                    <textarea id="product-description" rows="4" class="w-full p-2 rounded comic-border border-2"></textarea>
-                </div>
-                
-                <div>
-                    <label for="product-main-image-url" class="block font-bold">URL Immagine Principale:</label>
-                    <input type="text" id="product-main-image-url" required class="w-full p-2 rounded comic-border border-2 mt-1">
-                </div>
-                <div>
-                    <label for="product-additional-images-url" class="block font-bold">URL Immagini Aggiuntive (separate da virgola):</label>
-                    <input type="text" id="product-additional-images-url" class="w-full p-2 rounded comic-border border-2 mt-1">
-                </div>
-                <button type="submit" id="product-form-submit" class="w-full bg-[#27ae60] text-white p-3 rounded-lg bebas-font text-xl comic-shadow-sm border-2 border-black">Salva</button>
-            </form>
-        </div>
-    </div>
+    <main class="flex-grow container mx-auto p-4 md:p-8">
+        <div id="page-content" class="min-h-[50vh]"></div>
+    </main>
 
-    <footer class="bg-[#2c3e50] text-gray-300 py-6 mt-16 comic-border border-t-8">
-        <div class="container mx-auto text-center">
-            <p>&copy; 2025 Manbaga Comics & Games. Tutti i diritti riservati.</p>
+    <footer class="bg-gray-800 text-white p-4 mt-auto">
+        <div class="container mx-auto text-center text-sm">
+            &copy; 2024 Manbaga Comics & Games. All rights reserved.
         </div>
     </footer>
 
-    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center hidden">
-        <div class="bg-white p-8 rounded-lg comic-border comic-shadow w-11/12 max-w-md relative">
-            <button class="close-btn absolute top-2 right-4 text-3xl font-bold">&times;</button>
-            <div id="login-form">
-                <h3 class="text-3xl text-center text-[#e74c3c] mb-4">Accedi</h3>
-                <input type="email" id="login-email" placeholder="Email" required class="w-full p-2 mb-4 rounded comic-border border-2">
-                <input type="password" id="login-password" placeholder="Password" required class="w-full p-2 mb-4 rounded comic-border border-2">
-                <button id="login-submit-btn" class="w-full bg-[#27ae60] text-white p-3 rounded-lg bebas-font text-xl comic-shadow-sm border-2 border-black">Accedi</button>
-                <p class="text-center mt-4">Non hai un account? <a href="#" id="show-signup" class="text-[#3498db] font-bold">Registrati</a></p>
+    <div id="cart-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h2 class="text-2xl font-bold bebas-font">Carrello</h2>
+                <button id="close-cart-modal" class="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
             </div>
-            <div id="signup-form" class="hidden">
-                <h3 class="text-3xl text-center text-[#e74c3c] mb-4">Registrati</h3>
-                <input type="email" id="signup-email" placeholder="Email" required class="w-full p-2 mb-4 rounded comic-border border-2">
-                <input type="password" id="signup-password" placeholder="Password" required class="w-full p-2 mb-4 rounded comic-border border-2">
-                <button id="signup-submit-btn" class="w-full bg-[#27ae60] text-white p-3 rounded-lg bebas-font text-xl comic-shadow-sm border-2 border-black">Registrati</button>
-                <p class="text-center mt-4">Hai già un account? <a href="#" id="show-login" class="text-[#3498db] font-bold">Accedi</a></p>
-            </div>
-            <div id="admin-login-form" class="hidden">
-                <h3 class="text-3xl text-center text-[#34495e] mb-4">Accesso Admin</h3>
-                <input type="text" id="admin-username" placeholder="Username" required class="w-full p-2 mb-4 rounded comic-border border-2">
-                <input type="password" id="admin-password" placeholder="Password" required class="w-full p-2 mb-4 rounded comic-border border-2">
-                <button id="admin-submit-btn" class="w-full bg-[#34495e] text-white p-3 rounded-lg bebas-font text-xl comic-shadow-sm border-2 border-black">Entra</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="custom-alert-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center hidden">
-        <div class="bg-white p-8 rounded-lg comic-border comic-shadow w-11/12 max-w-sm text-center">
-            <p id="custom-alert-message" class="text-lg mb-6"></p>
-            <button id="custom-alert-close-btn" class="bg-[#3498db] text-white px-6 py-2 rounded-lg bebas-font text-lg comic-shadow-sm border-2 border-black">OK</button>
-        </div>
-    </div>
-    
-    <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center hidden">
-        <div class="bg-white p-8 rounded-lg comic-border comic-shadow w-11/12 max-w-3xl relative">
-            <button class="close-btn absolute top-2 right-4 text-3xl font-bold">&times;</button>
-            <h3 class="text-3xl text-center text-[#e74c3c] mb-6">Il Mio Carrello</h3>
             <div id="cart-items" class="space-y-4">
                 </div>
-            <div class="flex justify-between items-center mt-8 pt-4 border-t border-gray-300">
-                <p class="text-2xl font-bold bebas-font">Totale: <span id="cart-total" class="text-[#e74c3c]">0,00€</span></p>
-                <button id="checkout-btn" class="bg-[#27ae60] text-white p-3 rounded-lg bebas-font text-xl comic-shadow-sm border-2 border-black hover:bg-[#2ecc71] transition-transform transform hover:scale-105">Procedi al Pagamento</button>
+            <div id="cart-summary" class="mt-4 pt-4 border-t text-right font-bold bebas-font">
+                Totale: <span id="cart-total">0.00€</span>
             </div>
+            <div class="flex justify-end mt-4">
+                <button id="checkout-btn" class="bg-green-500 text-white px-6 py-2 rounded-lg bebas-font comic-button">Procedi al Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="product-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex justify-center items-center p-4">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl max-h-[95vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h2 class="text-3xl font-bold bebas-font" id="product-title"></h2>
+                <button id="close-product-modal" class="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
+            </div>
+            <div id="product-details-content">
+                </div>
+        </div>
+    </div>
+
+    <div id="auth-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h2 class="text-2xl font-bold bebas-font">Accesso Admin</h2>
+                <button id="close-auth-modal" class="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
+            </div>
+            <form id="admin-login-form">
+                <div class="mb-4">
+                    <label for="admin-username" class="block text-gray-700">Username:</label>
+                    <input type="text" id="admin-username" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                </div>
+                <div class="mb-4">
+                    <label for="admin-password" class="block text-gray-700">Password:</label>
+                    <input type="password" id="admin-password" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                </div>
+                <button type="submit" id="admin-submit-btn" class="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 bebas-font comic-button">Accedi</button>
+            </form>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const API_BASE_URL = 'http://localhost:3000/api';
-            const ADMIN_USERNAME = 'admin';
-            const ADMIN_PASSWORD = '1234';
-
-            // --- Selezione elementi DOM ---
-            const mainContent = document.getElementById('main-content');
-            const categoryPage = document.getElementById('category-page');
-            const productDetailPage = document.getElementById('product-detail-page');
-            const adminPanel = document.getElementById('admin-panel');
-            const cartCountElements = [document.getElementById('cart-count'), document.getElementById('cart-count-mobile')];
-            const productGrid = document.getElementById('product-grid');
-            const tableGridContainer = document.getElementById('table-grid');
-            const timeSlotSelectionSection = document.getElementById('time-slot-selection');
-            const timeSlotsContainer = document.getElementById('time-slots-container');
-            const bookingDetailsSection = document.getElementById('booking-details');
-            const selectedTableSpan = document.getElementById('selected-table');
-            const finalSelectedTableSpan = document.getElementById('final-selected-table');
-            const finalSelectedTimeSpan = document.getElementById('final-selected-time');
-            const bookingForm = document.getElementById('booking-form');
-            const bookingDateInput = document.getElementById('booking-date');
-            const tableIdInput = document.getElementById('tableId-input');
-            const dateInput = document.getElementById('date-input');
-            const timeInput = document.getElementById('time-input');
-            const adminProductList = document.getElementById('admin-product-list');
-            const adminBookingList = document.getElementById('admin-booking-list');
-            const productModal = document.getElementById('product-modal');
-            const productModalTitle = document.getElementById('product-modal-title');
-            const productForm = document.getElementById('product-form');
-            const productIdInput = document.getElementById('product-id');
-            const productTitleInput = document.getElementById('product-title');
-            const productCategoryInput = document.getElementById('product-category');
-            const productPriceInput = document.getElementById('product-price');
-            const productDescriptionInput = document.getElementById('product-description');
-            const productMainImageUrlInput = document.getElementById('product-main-image-url');
-            const productAdditionalImagesUrlInput = document.getElementById('product-additional-images-url');
-            const productDetailTitle = document.getElementById('product-detail-title');
-            const productDetailPrice = document.getElementById('product-detail-price');
-            const productDetailDescription = document.getElementById('product-detail-description');
-            const mainProductImage = document.getElementById('main-product-image');
-            const thumbnailGallery = document.getElementById('thumbnail-gallery');
-            const addToCartDetailBtn = productDetailPage.querySelector('.add-to-cart-btn');
-            const customAlertModal = document.getElementById('custom-alert-modal');
-            const customAlertMessage = document.getElementById('custom-alert-message');
-            const customAlertCloseBtn = document.getElementById('custom-alert-close-btn');
-            const cartModal = document.getElementById('cart-modal');
+            const pageContent = document.getElementById('page-content');
             const cartItemsContainer = document.getElementById('cart-items');
-            const cartTotalSpan = document.getElementById('cart-total');
-            const checkoutBtn = document.getElementById('checkout-btn');
+            const cartTotalElement = document.getElementById('cart-total');
+            const cartCountElement = document.getElementById('cart-count');
+            const productModal = document.getElementById('product-modal');
+            const cartModal = document.getElementById('cart-modal');
+            const authModal = document.getElementById('auth-modal');
 
-            let currentUserId = localStorage.getItem('userId') || `user-${Date.now()}`;
-            localStorage.setItem('userId', currentUserId);
-            
-            let currentBookings = [];
-            let selectedTableId = null;
+            // --- Costanti per Admin (da spostare in un file .env o database in produzione) ---
+            const ADMIN_USERNAME = "admin";
+            const ADMIN_PASSWORD = "password123";
 
-            // --- API Calls ---
-            const fetchProducts = async (endpoint) => {
-                const response = await fetch(`${API_BASE_URL}/products${endpoint}`);
-                if (!response.ok) throw new Error('Failed to fetch products');
-                return response.json();
+            // --- API di base ---
+            const API_BASE = ""; // Percorso relativo
+
+            // Funzione per mostrare un messaggio di allerta (per feedback utente)
+            const showAlert = (message) => {
+                alert(message);
             };
 
-            const fetchBookings = async () => {
-                const response = await fetch(`${API_BASE_URL}/bookings`);
-                if (!response.ok) throw new Error('Failed to fetch bookings');
-                const bookings = await response.json();
-                currentBookings = bookings;
-                return bookings;
-            };
-            
-            const fetchCart = async () => {
-                const response = await fetch(`${API_BASE_URL}/cart/${currentUserId}`);
-                if (!response.ok) throw new Error('Failed to fetch cart');
-                return response.json();
+            // Funzione per il rendering delle pagine
+            const displayHome = () => {
+                pageContent.innerHTML = `
+                    <section class="text-center my-12">
+                        <h1 class="text-6xl text-blue-800 font-bold bebas-font comic-border p-4 inline-block transform -rotate-2">Benvenuto da MANBAGA!</h1>
+                        <p class="mt-4 text-xl text-gray-700">Il tuo negozio di fiducia per Manga, Fumetti e Giochi.</p>
+                    </section>
+                    
+                    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 my-12">
+                        <div class="bg-white p-6 rounded-lg shadow-lg comic-border hover:transform hover:scale-105 transition-transform duration-300">
+                            <h3 class="text-3xl bebas-font text-blue-600 mb-2">Manga & Fumetti</h3>
+                            <p class="text-gray-600">Esplora la nostra vasta collezione di storie a fumetti.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-lg comic-border hover:transform hover:scale-105 transition-transform duration-300">
+                            <h3 class="text-3xl bebas-font text-blue-600 mb-2">Giochi da Tavolo</h3>
+                            <p class="text-gray-600">Scopri nuove avventure con i nostri giochi da tavolo.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-lg comic-border hover:transform hover:scale-105 transition-transform duration-300">
+                            <h3 class="text-3xl bebas-font text-blue-600 mb-2">Prenota il Tavolo</h3>
+                            <p class="text-gray-600">Vieni a trovarci e prenota un tavolo per giocare con gli amici.</p>
+                        </div>
+                    </section>
+
+                    <section id="featured-products" class="my-12">
+                        <h2 class="text-4xl text-center text-blue-800 bebas-font mb-8">Prodotti in Evidenza</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="featured-products-grid">
+                            </div>
+                    </section>
+                `;
+                // Carica i prodotti in evidenza
+                loadFeaturedProducts();
             };
 
-            const updateCartOnServer = async (cartItems) => {
-                const response = await fetch(`${API_BASE_URL}/cart/${currentUserId}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ items: cartItems })
-                });
-                if (!response.ok) throw new Error('Failed to update cart');
-                return response.json();
-            };
-
-            const addOrUpdateProduct = async (product) => {
-                const isEdit = !!product.id;
-                const url = isEdit ? `${API_BASE_URL}/admin/products/${product.id}` : `${API_BASE_URL}/admin/products`;
-                const method = isEdit ? 'PUT' : 'POST';
-                const response = await fetch(url, {
-                    method,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(product)
-                });
-                if (!response.ok) throw new Error(`Failed to ${isEdit ? 'update' : 'add'} product`);
-                return response.json();
-            };
-
-            const deleteProduct = async (productId) => {
-                const response = await fetch(`${API_BASE_URL}/admin/products/${productId}`, { method: 'DELETE' });
-                if (!response.ok) throw new Error('Failed to delete product');
-                return response.json();
-            };
-            
-            const createBooking = async (booking) => {
-                const response = await fetch(`${API_BASE_URL}/bookings`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(booking)
-                });
-                if (!response.ok) throw new Error('Failed to create booking');
-                return response.json();
-            };
-            
-            const cancelBooking = async (tableId, date, time) => {
-                const response = await fetch(`${API_BASE_URL}/bookings/${tableId}/${date}/${time}`, { method: 'DELETE' });
-                if (!response.ok) {
-                    throw new Error('Failed to cancel booking');
-                }
-                const contentType = response.headers.get("content-type");
-                if (contentType && contentType.indexOf("application/json") !== -1) {
-                    return response.json();
-                } else {
-                    return { message: "Success" };
-                }
-            };
-
-            // --- Funzioni di rendering ---
-            const renderProducts = (productsToRender, gridElement) => {
-                if (!gridElement) return;
-                gridElement.innerHTML = '';
-                productsToRender.forEach(product => {
-                    const card = document.createElement('a');
-                    card.href = `#product/${product.id}`;
-                    card.className = 'bg-white rounded-lg p-4 comic-border comic-shadow text-center transition-transform transform hover:-translate-y-1 hover:shadow-[12px_12px_0px_#2c3e50] cursor-pointer product-card';
-                    card.innerHTML = `
-                        <img src="${product.mainImageUrl}" alt="Immagine di ${product.title}" class="w-full h-auto rounded-md object-cover comic-border mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x600/cccccc/ffffff?text=Image+Error';">
-                        <h3 class="text-xl text-[#34495e]">${product.title}</h3>
-                        <p class="text-2xl font-bold text-[#e74c3c] my-2">${product.price}</p>
-                    `;
-                    card.dataset.id = product.id;
-                    gridElement.appendChild(card);
-                });
-                attachProductCardListeners();
-            };
-
-            const renderTables = (bookings) => {
-                if (!tableGridContainer) return;
-                tableGridContainer.innerHTML = '';
-                const TOTAL_TABLES = 8;
-                const now = new Date();
-                const today = now.toISOString().split('T')[0];
-                const currentTime = now.toTimeString().split(' ')[0].substring(0, 5);
-
-                for (let i = 1; i <= TOTAL_TABLES; i++) {
-                    const isBooked = bookings.some(r => r.tableId == i && r.date === today && r.time <= currentTime && r.endTime > currentTime);
-                    const tableDiv = document.createElement('div');
-                    tableDiv.className = `table p-4 rounded-lg comic-border text-white bebas-font text-xl cursor-pointer transition-transform transform hover:scale-110 ${isBooked ? 'booked' : 'available'}`;
-                    tableDiv.textContent = `Tavolo ${i}`;
-                    tableDiv.dataset.table = i;
-                    tableGridContainer.appendChild(tableDiv);
-                }
-                attachTableListeners();
-            };
-
-            const renderTimeSlots = (tableId, date) => {
-                timeSlotsContainer.innerHTML = '';
-                const now = new Date();
-                const today = now.toISOString().split('T')[0];
-                const currentTime = now.toTimeString().split(' ')[0].substring(0, 5);
-                const isToday = date === today;
-
-                const timeRanges = [
-                    { start: 9, end: 12 },
-                    { start: 17, end: 19 }
-                ];
+            const loadFeaturedProducts = async () => {
+                const grid = document.getElementById('featured-products-grid');
+                grid.innerHTML = '<div class="col-span-full text-center text-gray-500">Caricamento prodotti...</div>';
                 
-                timeRanges.forEach(range => {
-                    let time = range.start * 60;
-                    while (time < range.end * 60) {
-                        const hour = Math.floor(time / 60);
-                        const minute = time % 60;
-                        const formattedTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-                        const formattedEndTime = `${Math.floor((time + 60) / 60).toString().padStart(2, '0')}:${(time + 60) % 60 === 0 ? '00' : '30'}`;
-
-                        const slotBookings = currentBookings.filter(b => b.tableId == tableId && b.date === date);
-                        const isBooked = slotBookings.some(b => {
-                            const bookingStart = b.time;
-                            const bookingEnd = b.endTime;
-                            
-                            // Controlla se una nuova prenotazione si sovrappone a una esistente
-                            return (formattedTime >= bookingStart && formattedTime < bookingEnd) ||
-                                   (formattedEndTime > bookingStart && formattedEndTime <= bookingEnd) ||
-                                   (formattedTime < bookingStart && formattedEndTime > bookingEnd);
-                        });
-
-                        const isPast = isToday && formattedTime < currentTime;
-
-                        const timeSlotDiv = document.createElement('div');
-                        timeSlotDiv.className = `time-slot ${isBooked || isPast ? 'booked' : 'available'}`;
-                        timeSlotDiv.textContent = `${formattedTime} - ${formattedEndTime}`;
-                        timeSlotDiv.dataset.time = formattedTime;
-                        timeSlotDiv.dataset.endTime = formattedEndTime;
-                        
-                        if (!isBooked && !isPast) {
-                             timeSlotDiv.addEventListener('click', () => {
-                                document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected-slot'));
-                                timeSlotDiv.classList.add('selected-slot');
-                                finalSelectedTableSpan.textContent = tableId;
-                                finalSelectedTimeSpan.textContent = timeSlotDiv.dataset.time;
-                                
-                                tableIdInput.value = tableId;
-                                dateInput.value = date;
-                                timeInput.value = timeSlotDiv.dataset.time;
-                                document.getElementById('end-time').value = timeSlotDiv.dataset.endTime;
-
-                                bookingDetailsSection.classList.remove('hidden');
-                            });
-                        }
-
-                        timeSlotsContainer.appendChild(timeSlotDiv);
-
-                        time += 30; // Incrementa di 30 minuti
-                    }
-                });
-            };
-
-            const renderAdminProducts = async () => {
                 try {
-                    const allProducts = await fetchProducts('/all');
-                    adminProductList.innerHTML = '';
-                    Object.values(allProducts).flat().forEach(product => {
-                        const productItem = document.createElement('div');
-                        productItem.className = 'flex justify-between items-center p-4 bg-gray-200 rounded-lg comic-border comic-shadow-sm';
-                        productItem.innerHTML = `
-                            <div>
-                                <span class="font-bold">${product.title}</span> - <span class="text-sm text-gray-600">${product.price}</span>
-                            </div>
-                            <div>
-                                <button class="edit-product-btn bg-yellow-500 text-white px-3 py-1 rounded-md text-sm mr-2" data-id="${product.id}">Modifica</button>
-                                <button class="delete-product-btn bg-red-500 text-white px-3 py-1 rounded-md text-sm" data-id="${product.id}">Elimina</button>
-                            </div>
-                        `;
-                        adminProductList.appendChild(productItem);
+                    const response = await fetch(`${API_BASE}/api/products/all`);
+                    const allProducts = await response.json();
+                    
+                    const featured = allProducts.manga.slice(0, 4); // Mostra i primi 4 manga come evidenza
+                    grid.innerHTML = '';
+                    featured.forEach(product => {
+                        grid.innerHTML += createProductCard(product, 'manga');
                     });
-                    attachAdminListeners();
                 } catch (error) {
-                    showAlert("Errore nel caricare i prodotti admin: " + error.message);
+                    console.error('Errore nel caricamento dei prodotti:', error);
+                    grid.innerHTML = `<div class="col-span-full text-center text-red-500">
+                        <p>Errore nel caricamento dei prodotti. Prova a ricaricare la pagina.</p>
+                        <p><strong>Causa probabile su Vercel:</strong> Il backend non è connesso a un database persistente.</p>
+                    </div>`;
                 }
             };
+            
+            const displayProducts = async (category) => {
+                pageContent.innerHTML = `<h2 class="text-4xl text-center text-blue-800 bebas-font mb-8">${category.charAt(0).toUpperCase() + category.slice(1)}</h2>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="products-grid">
+                                            </div>`;
+                const grid = document.getElementById('products-grid');
+                grid.innerHTML = '<div class="col-span-full text-center text-gray-500">Caricamento prodotti...</div>';
 
-            const renderAdminBookings = async () => {
                 try {
-                    const bookings = await fetchBookings();
-                    adminBookingList.innerHTML = '';
-                    if (bookings.length === 0) {
-                        adminBookingList.innerHTML = '<p class="text-center text-gray-500">Nessuna prenotazione attiva.</p>';
-                        return;
-                    }
-                    bookings.forEach(booking => {
-                        const bookingItem = document.createElement('div');
-                        bookingItem.className = 'flex justify-between items-center p-4 bg-gray-200 rounded-lg comic-border comic-shadow-sm';
-                        bookingItem.innerHTML = `
-                            <div>
-                                <span class="font-bold">Tavolo ${booking.tableId}</span> - <span class="text-sm text-gray-600">
-                                    ${booking.date} dalle ${booking.time} alle ${booking.endTime}
-                                </span>
-                                <p class="text-sm text-gray-500">${booking.name} ${booking.surname}</p>
-                            </div>
-                            <button class="cancel-booking-btn bg-red-500 text-white px-3 py-1 rounded-md text-sm"
-                                data-table="${booking.tableId}" data-date="${booking.date}" data-time="${booking.time}">Cancella</button>
-                        `;
-                        adminBookingList.appendChild(bookingItem);
-                    });
-                    attachAdminListeners();
-                } catch (error) {
-                    showAlert("Errore nel caricare le prenotazioni admin: " + error.message);
-                }
-            };
-
-            const renderCart = async () => {
-                try {
-                    const { items } = await fetchCart();
-                    cartItemsContainer.innerHTML = '';
-                    let total = 0;
-                    if (items && items.length > 0) {
-                        items.forEach(item => {
-                            const productTotal = parseFloat(item.price.replace(',', '.').replace('€', '')) * item.quantity;
-                            total += productTotal;
-                            const itemDiv = document.createElement('div');
-                            itemDiv.className = 'flex items-center justify-between p-4 bg-gray-100 rounded-lg comic-border-sm';
-                            itemDiv.innerHTML = `
-                                <div class="flex items-center space-x-4">
-                                    <img src="${item.mainImageUrl}" alt="${item.title}" class="w-16 h-16 object-cover rounded-md comic-border-sm">
-                                    <div>
-                                        <h4 class="font-bold">${item.title}</h4>
-                                        <p class="text-sm text-gray-600">${item.price}</p>
-                                        <p class="text-sm text-gray-500">Quantità: ${item.quantity}</p>
-                                    </div>
-                                </div>
-                                <button class="remove-from-cart-btn bg-red-500 text-white p-2 rounded-lg text-sm bebas-font" data-id="${item.id}">Rimuovi</button>
-                            `;
-                            cartItemsContainer.appendChild(itemDiv);
+                    const response = await fetch(`${API_BASE}/api/products/all`);
+                    const allProducts = await response.json();
+                    const products = allProducts[category] || [];
+                    
+                    grid.innerHTML = '';
+                    if (products.length > 0) {
+                        products.forEach(product => {
+                            grid.innerHTML += createProductCard(product, category);
                         });
                     } else {
-                        cartItemsContainer.innerHTML = '<p class="text-center text-gray-500">Il tuo carrello è vuoto.</p>';
+                        grid.innerHTML = '<div class="col-span-full text-center text-gray-500">Nessun prodotto in questa categoria.</div>';
                     }
-                    cartTotalSpan.textContent = total.toFixed(2).replace('.', ',') + '€';
-                    updateCartCount(items.reduce((sum, item) => sum + item.quantity, 0));
                 } catch (error) {
-                    showAlert("Errore nel caricare il carrello: " + error.message);
+                    console.error('Errore nel caricamento dei prodotti:', error);
+                    grid.innerHTML = `<div class="col-span-full text-center text-red-500">
+                        <p>Errore nel caricamento dei prodotti. Prova a ricaricare la pagina.</p>
+                        <p><strong>Causa probabile su Vercel:</strong> Il backend non è connesso a un database persistente.</p>
+                    </div>`;
+                }
+            };
+
+            const displayBooking = async () => {
+                pageContent.innerHTML = `
+                    <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg comic-border">
+                        <h2 class="text-4xl bebas-font text-center text-blue-800 mb-6">Prenota il tuo Tavolo</h2>
+                        <form id="booking-form" class="space-y-4">
+                            <div>
+                                <label for="booking-name" class="block text-gray-700 font-bold">Nome:</label>
+                                <input type="text" id="booking-name" required class="w-full mt-1 p-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="booking-date" class="block text-gray-700 font-bold">Data:</label>
+                                <input type="date" id="booking-date" required class="w-full mt-1 p-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="booking-time" class="block text-gray-700 font-bold">Ora:</label>
+                                <select id="booking-time" required class="w-full mt-1 p-2 border border-gray-300 rounded-md">
+                                    <option value="">Seleziona un orario</option>
+                                    <option value="15:00">15:00 - 17:00</option>
+                                    <option value="17:00">17:00 - 19:00</option>
+                                    <option value="19:00">19:00 - 21:00</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="booking-table" class="block text-gray-700 font-bold">Numero Tavolo:</label>
+                                <input type="number" id="booking-table" min="1" max="10" required class="w-full mt-1 p-2 border border-gray-300 rounded-md">
+                            </div>
+                            <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded-lg bebas-font comic-button">Conferma Prenotazione</button>
+                        </form>
+                        
+                        <div id="booking-list" class="mt-8">
+                            <h3 class="text-2xl bebas-font text-blue-700">Le tue prenotazioni:</h3>
+                            <div id="bookings-container" class="mt-4 space-y-4"></div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('booking-form').addEventListener('submit', handleBookingSubmit);
+                loadBookings();
+            };
+
+            const displayAdminPanel = () => {
+                pageContent.innerHTML = `
+                    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg comic-border">
+                        <h2 class="text-4xl bebas-font text-center text-blue-800 mb-6">Pannello Admin</h2>
+
+                        <div class="mb-8">
+                            <h3 class="text-2xl bebas-font text-blue-700 mb-4">Aggiungi Nuovo Prodotto</h3>
+                            <form id="add-product-form" class="space-y-4">
+                                <input type="text" id="product-title-input" placeholder="Titolo" required class="w-full p-2 border rounded-md">
+                                <textarea id="product-description-input" placeholder="Descrizione" class="w-full p-2 border rounded-md"></textarea>
+                                <input type="text" id="product-price-input" placeholder="Prezzo (es. 15,99€)" required class="w-full p-2 border rounded-md">
+                                <input type="text" id="product-image-url-input" placeholder="URL Immagine Principale" required class="w-full p-2 border rounded-md">
+                                <select id="product-category-input" required class="w-full p-2 border rounded-md">
+                                    <option value="">Seleziona Categoria</option>
+                                    <option value="manga">Manga</option>
+                                    <option value="fumettiAmericani">Fumetti Americani</option>
+                                    <option value="tcg">TCG</option>
+                                    <option value="giochiTavolo">Giochi da Tavolo</option>
+                                    <option value="actionFigure">Action Figure</option>
+                                    <option value="funkoPop">Funko Pop!</option>
+                                    <option value="libri">Libri</option>
+                                </select>
+                                <button type="submit" class="w-full bg-green-500 text-white p-3 rounded-lg bebas-font comic-button">Aggiungi Prodotto</button>
+                            </form>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-2xl bebas-font text-blue-700 mb-4">Gestisci Prodotti Esistenti</h3>
+                            <div class="flex items-center space-x-4 mb-4">
+                                <label for="admin-category-filter" class="bebas-font">Filtra per Categoria:</label>
+                                <select id="admin-category-filter" class="p-2 border rounded-md">
+                                    <option value="all">Tutti</option>
+                                    <option value="manga">Manga</option>
+                                    <option value="fumettiAmericani">Fumetti Americani</option>
+                                    <option value="tcg">TCG</option>
+                                    <option value="giochiTavolo">Giochi da Tavolo</option>
+                                    <option value="actionFigure">Action Figure</option>
+                                    <option value="funkoPop">Funko Pop!</option>
+                                    <option value="libri">Libri</option>
+                                </select>
+                            </div>
+                            <div id="admin-products-list" class="space-y-4">
+                                </div>
+                        </div>
+
+                    </div>
+                `;
+                document.getElementById('add-product-form').addEventListener('submit', handleAddProduct);
+                document.getElementById('admin-category-filter').addEventListener('change', loadAdminProducts);
+                loadAdminProducts();
+            };
+
+            const createProductCard = (product, category) => {
+                return `
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col items-center p-4 text-center comic-border">
+                        <img src="${product.mainImageUrl}" alt="${product.title}" class="w-full h-64 object-cover rounded-md mb-4 cursor-pointer" onclick="showProductDetails('${product.id}', '${category}')">
+                        <h3 class="text-xl font-bold bebas-font">${product.title}</h3>
+                        <p class="text-blue-500 text-lg bebas-font mt-2">${product.price}</p>
+                        <button class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg bebas-font comic-button add-to-cart-btn" data-id="${product.id}" data-category="${category}" data-title="${product.title}" data-price="${product.price}" data-image="${product.mainImageUrl}">
+                            Aggiungi al Carrello
+                        </button>
+                    </div>
+                `;
+            };
+
+            const showProductDetails = async (id, category) => {
+                try {
+                    const response = await fetch(`${API_BASE}/api/products/${category}/${id}`);
+                    const product = await response.json();
+                    
+                    const detailsContent = document.getElementById('product-details-content');
+                    const titleElement = document.getElementById('product-title');
+                    
+                    if (product && !product.error) {
+                        titleElement.textContent = product.title;
+                        detailsContent.innerHTML = `
+                            <div class="md:flex md:space-x-8">
+                                <div class="md:w-1/2">
+                                    <img src="${product.mainImageUrl}" alt="${product.title}" class="w-full rounded-md shadow-md">
+                                </div>
+                                <div class="md:w-1/2 mt-4 md:mt-0">
+                                    <p class="text-xl font-bold text-blue-500 bebas-font mb-4">${product.price}</p>
+                                    <p class="text-gray-700">${product.description}</p>
+                                    <button class="mt-6 bg-blue-500 text-white px-6 py-3 rounded-lg bebas-font comic-button add-to-cart-btn" data-id="${product.id}" data-category="${category}" data-title="${product.title}" data-price="${product.price}" data-image="${product.mainImageUrl}">
+                                        Aggiungi al Carrello
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        productModal.classList.remove('hidden');
+                    } else {
+                        showAlert('Dettagli del prodotto non trovati.');
+                    }
+                } catch (error) {
+                    console.error('Errore nel caricamento dei dettagli prodotto:', error);
+                    showAlert('Impossibile caricare i dettagli del prodotto.');
                 }
             };
 
             const updateCartCount = (count) => {
-                cartCountElements.forEach(el => el.textContent = count);
+                cartCountElement.textContent = count;
             };
 
-            // --- Gestione Pagine ---
-            const hideAllSections = () => {
-                mainContent.classList.add('hidden');
-                categoryPage.classList.add('hidden');
-                productDetailPage.classList.add('hidden');
-                adminPanel.classList.add('hidden');
-            };
-
-            const displayHome = async () => {
-                hideAllSections();
-                mainContent.classList.remove('hidden');
+            const updateCart = async () => {
                 try {
-                    const allProducts = await fetchProducts('/all');
-                    const featuredProducts = [];
-                    const productsList = Object.values(allProducts).flat();
-                    const shuffled = productsList.sort(() => 0.5 - Math.random());
-                    for (let i = 0; i < 4 && i < shuffled.length; i++) {
-                        featuredProducts.push(shuffled[i]);
-                    }
-                    renderProducts(featuredProducts, productGrid);
-                    const bookings = await fetchBookings();
-                    renderTables(bookings);
-                } catch (error) {
-                    showAlert("Errore nel caricare la pagina principale: " + error.message);
-                }
-            };
-            
-            const displayCategory = async (categoryKey, categoryName) => {
-                hideAllSections();
-                categoryPage.classList.remove('hidden');
-                document.getElementById('category-title').textContent = categoryName;
-                try {
-                    const allProducts = await fetchProducts('/all');
-                    const productsToDisplay = allProducts[categoryKey] || [];
-                    renderProducts(productsToDisplay, document.getElementById('category-product-grid'));
-                } catch (error) {
-                    showAlert("Errore nel caricare la categoria: " + error.message);
-                }
-                window.scrollTo(0, 0);
-            };
-            
-            const displayProductDetail = async (productId) => {
-                hideAllSections();
-                productDetailPage.classList.remove('hidden');
-                try {
-                    const product = await fetchProducts(`/${productId}`);
-                    productDetailTitle.textContent = product.title;
-                    productDetailPrice.textContent = product.price;
-                    productDetailDescription.textContent = product.description;
-                    mainProductImage.src = product.mainImageUrl;
-                    mainProductImage.alt = `Immagine principale di ${product.title}`;
+                    const userId = "test-user"; // ID utente fittizio per demo
+                    const response = await fetch(`${API_BASE}/api/cart/${userId}`);
+                    const cart = await response.json();
                     
-                    thumbnailGallery.innerHTML = '';
-                    const images = [product.mainImageUrl, ...(product.additionalImages || [])];
-                    images.forEach(imgUrl => {
-                        const thumbImg = document.createElement('img');
-                        thumbImg.src = imgUrl;
-                        thumbImg.className = 'w-16 h-16 object-cover rounded-md comic-border cursor-pointer transition-transform transform hover:scale-110';
-                        thumbImg.addEventListener('click', () => {
-                            mainProductImage.src = imgUrl;
+                    cartItemsContainer.innerHTML = '';
+                    let total = 0;
+                    
+                    if (cart.items && cart.items.length > 0) {
+                        cart.items.forEach(item => {
+                            const itemTotal = parseFloat(item.price.replace('€', '').replace(',', '.')) * item.quantity;
+                            total += itemTotal;
+                            cartItemsContainer.innerHTML += `
+                                <div class="flex items-center justify-between border-b pb-2">
+                                    <div class="flex items-center">
+                                        <img src="${item.image}" alt="${item.title}" class="w-16 h-16 object-cover rounded mr-4">
+                                        <div>
+                                            <h4 class="font-bold">${item.title}</h4>
+                                            <p>${item.price} x ${item.quantity}</p>
+                                        </div>
+                                    </div>
+                                    <button class="text-red-500 hover:text-red-700 remove-from-cart-btn" data-id="${item.id}">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </div>
+                            `;
                         });
-                        thumbnailGallery.appendChild(thumbImg);
-                    });
-                    
-                    addToCartDetailBtn.dataset.id = product.id;
-                } catch (error) {
-                    showAlert("Errore nel caricare i dettagli del prodotto: " + error.message);
-                    displayHome();
-                }
-                window.scrollTo(0, 0);
-            };
-
-            const displayAdminPanel = () => {
-                hideAllSections();
-                adminPanel.classList.remove('hidden');
-                renderAdminProducts();
-                renderAdminBookings();
-            };
-
-            // --- Gestione Modali e Avvisi ---
-            const showAlert = (message) => {
-                customAlertMessage.textContent = message;
-                customAlertModal.classList.remove('hidden');
-            };
-            customAlertCloseBtn.addEventListener('click', () => customAlertModal.classList.add('hidden'));
-
-            const openModal = (modalElement) => {
-                document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
-                modalElement.classList.remove('hidden');
-            };
-
-            // --- Event Listeners ---
-            document.querySelectorAll('.home-link').forEach(link => link.addEventListener('click', (e) => {
-                e.preventDefault();
-                displayHome();
-                mobileMenu.classList.add('hidden');
-            }));
-
-            document.querySelectorAll('[data-category]').forEach(link => link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const categoryKey = e.target.dataset.category;
-                const categoryName = e.target.textContent;
-                displayCategory(categoryKey, categoryName);
-                mobileMenu.classList.add('hidden');
-            }));
-            
-            document.querySelectorAll('.product-card').forEach(card => card.addEventListener('click', (e) => {
-                e.preventDefault();
-                displayProductDetail(card.dataset.id);
-            }));
-
-            document.getElementById('cart-btn').addEventListener('click', (e) => {
-                e.preventDefault();
-                renderCart();
-                cartModal.classList.remove('hidden');
-            });
-
-            document.getElementById('cart-btn-mobile').addEventListener('click', (e) => {
-                e.preventDefault();
-                renderCart();
-                cartModal.classList.remove('hidden');
-            });
-            
-            document.getElementById('checkout-btn').addEventListener('click', async () => {
-                try {
-                    const { items } = await fetchCart();
-                    if (!items || items.length === 0) {
-                        showAlert('Il carrello è vuoto!');
-                        return;
+                    } else {
+                        cartItemsContainer.innerHTML = '<p class="text-center text-gray-500">Il carrello è vuoto.</p>';
                     }
-                    const response = await fetch(`${API_BASE_URL}/cart/checkout/${currentUserId}`, {
+                    
+                    cartTotalElement.textContent = `${total.toFixed(2)}€`;
+                    updateCartCount(cart.items ? cart.items.length : 0);
+                    
+                } catch (error) {
+                    console.error('Errore nel recupero del carrello:', error);
+                    showAlert('Impossibile caricare il carrello. Prova a ricaricare.');
+                }
+            };
+            
+            const handleAddToCart = async (event) => {
+                const button = event.target.closest('.add-to-cart-btn');
+                const { id, category, title, price, image } = button.dataset;
+                const userId = "test-user";
+                
+                try {
+                    const response = await fetch(`${API_BASE}/api/cart/${userId}`);
+                    const cart = await response.json();
+                    
+                    const existingItem = cart.items.find(item => item.id == id);
+                    if (existingItem) {
+                        existingItem.quantity += 1;
+                    } else {
+                        cart.items.push({ id, category, title, price, image, quantity: 1 });
+                    }
+                    
+                    await fetch(`${API_BASE}/api/cart/${userId}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ items })
+                        body: JSON.stringify(cart)
                     });
-                    if (!response.ok) throw new Error('Checkout failed');
-                    showAlert('Ordine confermato! Grazie per l\'acquisto.');
-                    updateCartCount(0);
-                    renderCart(); // Svuota il carrello
-                } catch (error) {
-                    showAlert("Errore nel checkout: " + error.message);
-                }
-            });
-
-            const attachProductCardListeners = () => {
-                document.querySelectorAll('.product-card').forEach(card => {
-                    card.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const productId = card.dataset.id;
-                        displayProductDetail(productId);
-                    });
-                });
-            };
-
-            const attachAdminListeners = () => {
-                document.querySelectorAll('.edit-product-btn').forEach(btn => {
-                    btn.addEventListener('click', async () => {
-                        const productId = parseInt(btn.dataset.id);
-                        try {
-                            const productToEdit = await fetchProducts(`/${productId}`);
-                            productModalTitle.textContent = 'Modifica Prodotto';
-                            productIdInput.value = productToEdit.id;
-                            productTitleInput.value = productToEdit.title;
-                            productCategoryInput.value = productToEdit.category;
-                            productPriceInput.value = productToEdit.price;
-                            productDescriptionInput.value = productToEdit.description;
-                            productMainImageUrlInput.value = productToEdit.mainImageUrl;
-                            productAdditionalImagesUrlInput.value = productToEdit.additionalImages.join(', ');
-                            productModal.classList.remove('hidden');
-                        } catch (error) {
-                            showAlert("Errore nel caricare il prodotto da modificare: " + error.message);
-                        }
-                    });
-                });
-
-                document.querySelectorAll('.delete-product-btn').forEach(btn => {
-                    btn.addEventListener('click', async () => {
-                        const productId = parseInt(btn.dataset.id);
-                        if (confirm("Sei sicuro di voler eliminare questo prodotto?")) {
-                            try {
-                                await deleteProduct(productId);
-                                showAlert('Prodotto eliminato con successo!');
-                                renderAdminProducts();
-                                displayHome(); // Aggiorna la homepage
-                            } catch (error) {
-                                showAlert("Errore nell'eliminare il prodotto: " + error.message);
-                            }
-                        }
-                    });
-                });
-                
-                document.querySelectorAll('.cancel-booking-btn').forEach(btn => {
-                    btn.addEventListener('click', async () => {
-                        const tableId = parseInt(btn.dataset.table);
-                        const date = btn.dataset.date;
-                        const time = btn.dataset.time;
-                        if (confirm(`Sei sicuro di voler cancellare la prenotazione del tavolo ${tableId} del ${date} alle ${time}?`)) {
-                             try {
-                                await cancelBooking(tableId, date, time);
-                                showAlert(`Prenotazione per il Tavolo ${tableId} del ${date} cancellata.`);
-                                renderAdminBookings();
-                                displayHome();
-                            } catch (error) {
-                                showAlert("Errore nella cancellazione della prenotazione: " + error.message);
-                            }
-                        }
-                    });
-                });
-            };
-
-            const attachTableListeners = () => {
-                 document.querySelectorAll('.table').forEach(table => {
-                    table.addEventListener('click', () => {
-                        document.querySelectorAll('.table').forEach(t => t.classList.remove('selected'));
-                        table.classList.add('selected');
-                        
-                        selectedTableId = table.dataset.table;
-                        selectedTableSpan.textContent = selectedTableId;
-                        
-                        bookingDetailsSection.classList.add('hidden');
-                        timeSlotSelectionSection.classList.remove('hidden');
-                        
-                        const today = new Date().toISOString().split('T')[0];
-                        bookingDateInput.value = today;
-                        renderTimeSlots(selectedTableId, today);
-                    });
-                });
-            };
-            
-            bookingDateInput.addEventListener('change', (e) => {
-                const selectedDate = e.target.value;
-                if (selectedTableId) {
-                    renderTimeSlots(selectedTableId, selectedDate);
-                    bookingDetailsSection.classList.add('hidden');
-                }
-            });
-
-            bookingForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(bookingForm);
-                const newBooking = {
-                    tableId: parseInt(formData.get('tableId')),
-                    name: formData.get('name'),
-                    surname: formData.get('surname'),
-                    date: formData.get('date'),
-                    time: formData.get('time'),
-                    endTime: formData.get('endTime')
-                };
-                try {
-                    await createBooking(newBooking);
-                    showAlert(`Prenotazione confermata per il Tavolo ${newBooking.tableId}!`);
-                    bookingDetailsSection.classList.add('hidden');
-                    timeSlotSelectionSection.classList.add('hidden');
-                    bookingForm.reset();
-                    displayHome();
-                } catch (error) {
-                    showAlert("Errore nella prenotazione: " + error.message);
-                }
-            });
-
-            productForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const productData = {
-                    id: productIdInput.value ? parseInt(productIdInput.value) : undefined,
-                    title: productTitleInput.value,
-                    category: productCategoryInput.value,
-                    price: productPriceInput.value,
-                    description: productDescriptionInput.value,
-                    mainImageUrl: productMainImageUrlInput.value,
-                    additionalImages: productAdditionalImagesUrlInput.value.split(',').map(url => url.trim()).filter(Boolean)
-                };
-
-                try {
-                    await addOrUpdateProduct(productData);
-                    showAlert(`Prodotto ${productData.id ? 'modificato' : 'aggiunto'} con successo!`);
-                    productModal.classList.add('hidden');
-                    renderAdminProducts();
-                    displayHome();
-                } catch (error) {
-                    showAlert("Errore nel salvare il prodotto: " + error.message);
-                }
-            });
-
-            // Gestione dei tab nell'Admin Panel
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.tab-btn').forEach(b => {
-                        b.classList.remove('active-tab', 'border-[#3498db]');
-                        b.classList.add('border-transparent');
-                    });
-                    btn.classList.add('active-tab', 'border-[#3498db]');
-                    btn.classList.remove('border-transparent');
-
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-                    document.getElementById(`${btn.dataset.tab}-tab`).classList.remove('hidden');
                     
-                    if(btn.dataset.tab === 'products') renderAdminProducts();
-                    if(btn.dataset.tab === 'bookings') renderAdminBookings();
-                });
-            });
+                    updateCart();
+                    showAlert('Prodotto aggiunto al carrello!');
+                    
+                } catch (error) {
+                    console.error('Errore nell\'aggiunta al carrello:', error);
+                    showAlert('Impossibile aggiungere il prodotto al carrello.');
+                }
+            };
 
-            document.getElementById('add-product-btn').addEventListener('click', () => {
-                productModalTitle.textContent = 'Aggiungi Nuovo Prodotto';
-                productForm.reset();
-                productIdInput.value = '';
-                productModal.classList.remove('hidden');
-            });
-            
-            // Listeners per i bottoni di login
-            document.querySelectorAll('#user-login-btn, #user-login-btn-mobile').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const authModal = document.getElementById('auth-modal');
-                    document.getElementById('login-form').classList.remove('hidden');
-                    document.getElementById('signup-form').classList.add('hidden');
-                    document.getElementById('admin-login-form').classList.add('hidden');
-                    authModal.classList.remove('hidden');
-                });
-            });
-            document.querySelectorAll('#admin-login-btn, #admin-login-btn-mobile').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const authModal = document.getElementById('auth-modal');
-                    document.getElementById('login-form').classList.add('hidden');
-                    document.getElementById('signup-form').classList.add('hidden');
-                    document.getElementById('admin-login-form').classList.remove('hidden');
-                    authModal.classList.remove('hidden');
-                });
-            });
-
-            // Listeners per i bottoni di chiusura dei modali
-            document.querySelectorAll('.close-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
+            const handleCheckout = async () => {
+                const userId = "test-user";
+                try {
+                    await fetch(`${API_BASE}/api/cart/checkout/${userId}`, { method: 'POST' });
+                    updateCart();
+                    showAlert('Checkout completato! Il carrello è stato svuotato.');
                     cartModal.classList.add('hidden');
-                    productModal.classList.add('hidden');
-                    document.getElementById('auth-modal').classList.add('hidden');
+                } catch (error) {
+                    console.error('Errore nel checkout:', error);
+                    showAlert('Si è verificato un errore durante il checkout.');
+                }
+            };
+
+            const handleRemoveFromCart = async (event) => {
+                const button = event.target.closest('.remove-from-cart-btn');
+                const { id } = button.dataset;
+                const userId = "test-user";
+                
+                try {
+                    const response = await fetch(`${API_BASE}/api/cart/${userId}`);
+                    const cart = await response.json();
+                    
+                    cart.items = cart.items.filter(item => item.id != id);
+                    
+                    await fetch(`${API_BASE}/api/cart/${userId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(cart)
+                    });
+                    
+                    updateCart();
+                } catch (error) {
+                    console.error('Errore nella rimozione dal carrello:', error);
+                    showAlert('Impossibile rimuovere l\'articolo.');
+                }
+            };
+            
+            const handleBookingSubmit = async (e) => {
+                e.preventDefault();
+                const booking = {
+                    name: document.getElementById('booking-name').value,
+                    date: document.getElementById('booking-date').value,
+                    time: document.getElementById('booking-time').value,
+                    tableId: document.getElementById('booking-table').value,
+                };
+                
+                try {
+                    const response = await fetch(`${API_BASE}/api/bookings/add`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(booking)
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        showAlert('Prenotazione confermata con successo!');
+                        document.getElementById('booking-form').reset();
+                        loadBookings();
+                    } else {
+                        showAlert(result.error || 'Errore nella prenotazione.');
+                    }
+                } catch (error) {
+                    console.error('Errore nella prenotazione:', error);
+                    showAlert('Errore di connessione. Riprova più tardi.');
+                }
+            };
+
+            const loadBookings = async () => {
+                const container = document.getElementById('bookings-container');
+                container.innerHTML = 'Caricamento prenotazioni...';
+                try {
+                    const response = await fetch(`${API_BASE}/api/bookings/available`);
+                    const bookings = await response.json();
+                    container.innerHTML = '';
+                    if (bookings.length > 0) {
+                        bookings.forEach(booking => {
+                            container.innerHTML += `
+                                <div class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+                                    <div>
+                                        <p><strong>Nome:</strong> ${booking.name}</p>
+                                        <p><strong>Data:</strong> ${booking.date}</p>
+                                        <p><strong>Ora:</strong> ${booking.time}</p>
+                                        <p><strong>Tavolo:</strong> ${booking.tableId}</p>
+                                    </div>
+                                    <button class="text-red-500 hover:text-red-700 comic-button-small" onclick="cancelBooking('${booking.tableId}', '${booking.date}', '${booking.time}')">
+                                        Annulla
+                                    </button>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        container.innerHTML = '<p class="text-gray-500">Nessuna prenotazione trovata.</p>';
+                    }
+                } catch (error) {
+                    console.error('Errore nel caricamento delle prenotazioni:', error);
+                    container.innerHTML = `<div class="text-red-500">
+                        <p>Errore nel caricamento delle prenotazioni.</p>
+                        <p><strong>Causa probabile su Vercel:</strong> Il backend non è connesso a un database persistente.</p>
+                    </div>`;
+                }
+            };
+
+            const cancelBooking = async (tableId, date, time) => {
+                if (!confirm('Sei sicuro di voler cancellare questa prenotazione?')) return;
+                try {
+                    const response = await fetch(`${API_BASE}/api/bookings/cancel/${tableId}/${date}/${time}`, { method: 'DELETE' });
+                    const result = await response.json();
+                    if (response.ok) {
+                        showAlert('Prenotazione cancellata con successo.');
+                        loadBookings();
+                    } else {
+                        showAlert(result.error || 'Errore nella cancellazione.');
+                    }
+                } catch (error) {
+                    console.error('Errore nella cancellazione:', error);
+                    showAlert('Errore di connessione. Riprova più tardi.');
+                }
+            };
+
+            const handleAddProduct = async (e) => {
+                e.preventDefault();
+                const newProduct = {
+                    title: document.getElementById('product-title-input').value,
+                    description: document.getElementById('product-description-input').value,
+                    price: document.getElementById('product-price-input').value,
+                    mainImageUrl: document.getElementById('product-image-url-input').value,
+                    category: document.getElementById('product-category-input').value,
+                    additionalImages: []
+                };
+
+                try {
+                    const response = await fetch(`${API_BASE}/api/products`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newProduct)
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        showAlert('Prodotto aggiunto con successo!');
+                        document.getElementById('add-product-form').reset();
+                        loadAdminProducts();
+                    } else {
+                        showAlert(result.error || 'Errore nell\'aggiunta del prodotto.');
+                    }
+                } catch (error) {
+                    console.error('Errore nell\'aggiunta del prodotto:', error);
+                    showAlert('Errore di connessione. Riprova più tardi.');
+                }
+            };
+
+            const loadAdminProducts = async () => {
+                const list = document.getElementById('admin-products-list');
+                const categoryFilter = document.getElementById('admin-category-filter').value;
+                list.innerHTML = 'Caricamento prodotti...';
+                
+                try {
+                    const response = await fetch(`${API_BASE}/api/products/all`);
+                    const allProducts = await response.json();
+                    
+                    list.innerHTML = '';
+                    const categories = categoryFilter === 'all' ? Object.keys(allProducts) : [categoryFilter];
+                    
+                    let hasProducts = false;
+                    categories.forEach(category => {
+                        const products = allProducts[category] || [];
+                        if (products.length > 0) {
+                            hasProducts = true;
+                            products.forEach(product => {
+                                list.innerHTML += `
+                                    <div class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+                                        <span>${product.title} (${category})</span>
+                                        <button class="text-red-500 hover:text-red-700 comic-button-small" onclick="deleteProduct('${product.id}', '${category}')">
+                                            Elimina
+                                        </button>
+                                    </div>
+                                `;
+                            });
+                        }
+                    });
+
+                    if (!hasProducts) {
+                        list.innerHTML = '<p class="text-gray-500">Nessun prodotto trovato in questa categoria.</p>';
+                    }
+                } catch (error) {
+                    console.error('Errore nel caricamento dei prodotti admin:', error);
+                    list.innerHTML = `<div class="text-red-500">
+                        <p>Errore nel caricamento dei prodotti. Prova a ricaricare la pagina.</p>
+                        <p><strong>Causa probabile su Vercel:</strong> Il backend non è connesso a un database persistente.</p>
+                    </div>`;
+                }
+            };
+
+            const deleteProduct = async (id, category) => {
+                if (!confirm(`Sei sicuro di voler eliminare questo prodotto (${id})?`)) return;
+                try {
+                    const response = await fetch(`${API_BASE}/api/products/${category}/${id}`, { method: 'DELETE' });
+                    const result = await response.json();
+                    if (response.ok) {
+                        showAlert('Prodotto eliminato con successo!');
+                        loadAdminProducts();
+                    } else {
+                        showAlert(result.error || 'Errore nell\'eliminazione del prodotto.');
+                    }
+                } catch (error) {
+                    console.error('Errore nell\'eliminazione del prodotto:', error);
+                    showAlert('Errore di connessione. Riprova più tardi.');
+                }
+            };
+
+            // Event listener per la navigazione
+            document.querySelectorAll('[data-page]').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = e.target.dataset.page;
+                    if (page === 'home') displayHome();
+                    else if (page === 'booking') displayBooking();
+                    else if (page === 'admin') authModal.classList.remove('hidden');
                 });
             });
 
-            // Listener per aggiungere prodotti al carrello
-            document.body.addEventListener('click', async (e) => {
-                if (e.target.classList.contains('add-to-cart-btn')) {
-                    const productId = parseInt(e.target.dataset.id);
-                    try {
-                        const product = await fetchProducts(`/${productId}`);
-                        const cartData = await fetchCart();
-                        const existingItem = cartData.items.find(item => item.id === product.id);
-                        if (existingItem) {
-                            existingItem.quantity += 1;
-                        } else {
-                            cartData.items.push({ ...product, quantity: 1 });
-                        }
-                        await updateCartOnServer(cartData.items);
-                        showAlert('Prodotto aggiunto al carrello!');
-                        updateCartCount(cartData.items.reduce((sum, item) => sum + item.quantity, 0));
-                    } catch (error) {
-                        showAlert("Errore nell'aggiungere al carrello: " + error.message);
-                    }
+            // Event listener per la navigazione del menu a tendina Prodotti
+            document.querySelectorAll('.dropdown-item').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = e.target.dataset.category;
+                    displayProducts(category);
+                });
+            });
+
+            // Gestione dei modali
+            document.getElementById('cart-btn').addEventListener('click', () => {
+                cartModal.classList.remove('hidden');
+                updateCart();
+            });
+            document.getElementById('close-cart-modal').addEventListener('click', () => cartModal.classList.add('hidden'));
+            document.getElementById('close-product-modal').addEventListener('click', () => productModal.classList.add('hidden'));
+            document.getElementById('close-auth-modal').addEventListener('click', () => authModal.classList.add('hidden'));
+            window.showProductDetails = showProductDetails; // Rendi la funzione globale
+
+            // Gestione del checkout
+            document.getElementById('checkout-btn').addEventListener('click', handleCheckout);
+
+            // Gestione dell'aggiunta/rimozione al carrello (event delegation)
+            document.addEventListener('click', (event) => {
+                if (event.target.closest('.add-to-cart-btn')) {
+                    handleAddToCart(event);
                 }
-                
-                if (e.target.classList.contains('remove-from-cart-btn')) {
-                    const productId = parseInt(e.target.dataset.id);
-                     try {
-                        const cartData = await fetchCart();
-                        const updatedCart = cartData.items.filter(item => item.id !== productId);
-                        await updateCartOnServer(updatedCart);
-                        showAlert('Prodotto rimosso dal carrello!');
-                        updateCartCount(updatedCart.reduce((sum, item) => sum + item.quantity, 0));
-                        renderCart(); // Ricarica il modale del carrello
-                    } catch (error) {
-                        showAlert("Errore nel rimuovere dal carrello: " + error.message);
-                    }
+                if (event.target.closest('.remove-from-cart-btn')) {
+                    handleRemoveFromCart(event);
                 }
             });
 
-            // Menu Mobile
+            // Gestione del menu mobile
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');
             const mobileMenu = document.getElementById('mobile-menu');
             const mobileProductsBtn = document.getElementById('mobile-products-btn');
