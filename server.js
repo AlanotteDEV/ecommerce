@@ -4,6 +4,7 @@ const path = require('path');
 const cors = require('cors');
 
 const app = express();
+const PORT = 3000;
 
 // Middleware per abilitare CORS e gestire i dati JSON
 app.use(cors());
@@ -13,9 +14,7 @@ const PRODUCTS_FILE = path.join(__dirname, 'products.json');
 const BOOKINGS_FILE = path.join(__dirname, 'bookings.json');
 const CARTS_DIR = path.join(__dirname, 'carts');
 
-// **ATTENZIONE:** Questo codice per la gestione dei file locali non funzionerà su Vercel.
-// Dovrai sostituirlo con un database (es. MongoDB) per rendere il sito funzionante.
-// Lo mantengo solo per completezza, ma su Vercel non salverà i dati.
+// Crea le cartelle e i file se non esistono
 if (!fs.existsSync(CARTS_DIR)) {
     fs.mkdirSync(CARTS_DIR);
 }
@@ -180,3 +179,4 @@ app.post('/api/cart/checkout/:userId', (req, res) => {
 
 // Esporta l'app Express
 module.exports = app;
+
