@@ -1,415 +1,400 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manbaga Comics & Games - E-commerce Migliorato</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gagalin&family=Bebas+Neue&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-
+    <title>Manbaga Comics & Games - E-commerce</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Gagalin&family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
-        /* Applicazione dei font personalizzati dove le classi di Tailwind non bastano */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f2f5; /* Sfondo leggermente diverso per un look più pulito */
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
         }
 
-        h1, h2, h3, h4 {
-            font-family: 'Gagalin', cursive;
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: center;
         }
 
-        nav a, .bebas-font, .dropdown-item {
+        header h1 {
+            font-family: 'Gagalin', sans-serif;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #444;
+        }
+
+        nav ul li {
+            position: relative;
+        }
+
+        nav ul li a {
             font-family: 'Bebas Neue', sans-serif;
+            color: #fff;
+            padding: 1rem 2rem;
+            display: block;
+            text-decoration: none;
+            transition: background-color 0.3s;
         }
 
-        /* Stile "fumetto" per bordi e ombre */
-        .comic-border {
-            border: 4px solid #000;
-            box-shadow: 6px 6px 0px 0px #000;
-            transition: transform 0.2s, box-shadow 0.2s;
+        nav ul li a:hover {
+            background-color: #555;
         }
 
-        .comic-border:hover {
-            transform: translate(2px, 2px);
-            box-shadow: 4px 4px 0px 0px #000;
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #444;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
         }
 
-        .dropdown-menu {
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-            transform-origin: top;
+        nav ul li:hover .dropdown-content {
+            display: block;
         }
 
-        .dropdown-menu.hidden {
-            opacity: 0;
-            transform: scaleY(0);
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
         }
 
-        .dropdown-menu:not(.hidden) {
-            opacity: 1;
-            transform: scaleY(1);
+        .dropdown-content a:hover {
+            background-color: #575757;
         }
 
-        .rotate-180 {
-            transform: rotate(180deg);
+        main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .fixed-cart-btn {
+        section {
+            background-color: #fff;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .product-card h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+        }
+
+        .product-card p {
+            color: #777;
+            margin-bottom: 1rem;
+        }
+
+        .add-to-cart {
+            background-color: #333;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .add-to-cart:hover {
+            background-color: #555;
+        }
+
+        .modal {
+            display: none;
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
-        .comic-button {
-            border: 2px solid #000;
-            box-shadow: 4px 4px 0px 0px #000;
-            transition: transform 0.2s, box-shadow 0.2s;
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 8px;
+            position: relative;
         }
-        .comic-button:hover {
-            transform: translate(1px, 1px);
-            box-shadow: 3px 3px 0px 0px #000;
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
         }
-        .comic-button:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px 0px #000;
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #cart-items {
+            list-style: none;
+            padding: 0;
+        }
+
+        #cart-items li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-total {
+            text-align: right;
+            font-weight: bold;
+            padding-top: 10px;
         }
     </style>
 </head>
-<body class="bg-gray-100 flex flex-col min-h-screen">
-    <header class="bg-blue-500 text-white p-4 shadow-md bebas-font sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="#" class="text-3xl" id="home-btn">MANBAGA</a>
-            <nav class="hidden md:flex items-center space-x-6">
-                <a href="#" class="text-xl hover:text-gray-200 transition-colors" data-page="home">Home</a>
-                <div class="relative group">
-                    <button class="text-xl flex items-center hover:text-gray-200 transition-colors" id="products-btn">
-                        Prodotti
-                        <svg class="w-4 h-4 ml-1 transform transition-transform duration-300" id="products-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div class="dropdown-menu absolute hidden mt-2 w-48 bg-white text-gray-800 rounded shadow-lg z-10">
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="manga">Manga</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="fumettiAmericani">Fumetti Americani</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="tcg">TCG</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="giochiTavolo">Giochi da Tavolo</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="actionFigure">Action Figure</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="funkoPop">Funko Pop!</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-200 dropdown-item" data-category="libri">Libri</a>
-                    </div>
-                </div>
-                <a href="#" class="text-xl hover:text-gray-200 transition-colors" data-page="booking">Prenota il Tavolo</a>
-                <a href="#" class="text-xl hover:text-gray-200 transition-colors" data-page="admin">Admin</a>
-            </nav>
-            <div class="flex items-center space-x-4 md:space-x-2">
-                <button id="cart-btn" class="text-xl relative hover:text-gray-200 transition-colors">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-8.9-5h7.45c.75 0 1.41-.41 1.75-1.03L23.6 6.13c.2-.38.15-.83-.15-1.16C23.12 4.7 22.56 4.5 22 4.5H5.21l-.94-2.5C4.05 1.58 3.52 1.3 3 1.3H1v2h2c.32 0 .58.2.68.48l3.6 8.52c.28.66.92 1.1 1.63 1.1H15.9l-1.34 2H8.1zM10.15 13H15.9l-1.34-2H8.15l-1.5 3z"></path>
-                    </svg>
-                    <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">0</span>
-                </button>
-                <button id="mobile-menu-btn" class="text-xl md:hidden">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
+
+<body>
+
+    <header>
+        <h1>Manbaga Comics & Games</h1>
+        <p>Il tuo negozio di fiducia per manga, fumetti, TCG, giochi da tavolo e molto altro!</p>
     </header>
 
-    <div id="mobile-menu" class="hidden md:hidden w-full bg-blue-500 text-white bebas-font transition-all duration-300 ease-in-out">
-        <div class="px-4 py-2 space-y-2">
-            <a href="#" class="block text-xl hover:bg-blue-600 p-2 rounded" data-page="home">Home</a>
-            <div class="relative">
-                <button id="mobile-products-btn" class="w-full text-left text-xl flex items-center justify-between hover:bg-blue-600 p-2 rounded">
-                    Prodotti
-                    <svg class="w-4 h-4 transform transition-transform duration-300" id="mobile-products-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-                <div id="mobile-products-submenu" class="hidden mt-2 ml-4 w-full text-gray-800 rounded bg-white shadow-lg bebas-font">
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="manga">Manga</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="fumettiAmericani">Fumetti Americani</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="tcg">TCG</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="giochiTavolo">Giochi da Tavolo</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="actionFigure">Action Figure</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="funkoPop">Funko Pop!</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" data-category="libri">Libri</a>
+    <nav>
+        <ul>
+            <li><a href="#" onclick="showPage('home')">Home</a></li>
+            <li>
+                <a href="#">Prodotti</a>
+                <div class="dropdown-content">
+                    <a href="#" onclick="showCategory('manga')">Manga</a>
+                    <a href="#" onclick="showCategory('fumettiAmericani')">Fumetti Americani</a>
+                    <a href="#" onclick="showCategory('tcg')">TCG</a>
+                    <a href="#" onclick="showCategory('giochiTavolo')">Giochi da Tavolo</a>
+                    <a href="#" onclick="showCategory('actionFigure')">Action Figure</a>
+                    <a href="#" onclick="showCategory('funkoPop')">Funko Pop!</a>
+                    <a href="#" onclick="showCategory('libri')">Libri</a>
                 </div>
-            </div>
-            <a href="#" class="block text-xl hover:bg-blue-600 p-2 rounded" data-page="booking">Prenota il Tavolo</a>
-            <a href="#" class="block text-xl hover:bg-blue-600 p-2 rounded" data-page="admin">Admin</a>
-        </div>
-    </div>
-    
-    <main class="flex-grow container mx-auto p-4 md:p-8">
-        <div id="page-content" class="min-h-[50vh]"></div>
-    </main>
+            </li>
+            <li><a href="#" onclick="showPage('booking')">Prenota il Tavolo</a></li>
+            <li><a href="#" onclick="showPage('admin')">Admin</a></li>
+            <li><a href="#" id="cart-btn">Carrello (<span id="cart-count">0</span>)</a></li>
+        </ul>
+    </nav>
 
-    <footer class="bg-gray-800 text-white p-4 mt-auto">
-        <div class="container mx-auto text-center text-sm">
-            &copy; 2024 Manbaga Comics & Games. All rights reserved.
-        </div>
-    </footer>
+    <main id="main-content">
+        </main>
 
-    <div id="cart-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex justify-center items-center">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h2 class="text-2xl font-bold bebas-font">Carrello</h2>
-                <button id="close-cart-modal" class="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
-            </div>
-            <div id="cart-items" class="space-y-4">
-                </div>
-            <div id="cart-summary" class="mt-4 pt-4 border-t text-right font-bold bebas-font">
-                Totale: <span id="cart-total">0.00€</span>
-            </div>
-            <div class="flex justify-end mt-4">
-                <button id="checkout-btn" class="bg-green-500 text-white px-6 py-2 rounded-lg bebas-font comic-button">Procedi al Checkout</button>
-            </div>
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Carrello</h2>
+            <ul id="cart-items">
+                </ul>
+            <div class="cart-total">Totale: <span id="cart-total">0.00€</span></div>
+            <button id="checkout-btn">Procedi al Checkout</button>
         </div>
     </div>
 
-    <div id="product-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex justify-center items-center p-4">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl max-h-[95vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h2 class="text-3xl font-bold bebas-font" id="product-title"></h2>
-                <button id="close-product-modal" class="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
-            </div>
-            <div id="product-details-content">
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="product-details">
                 </div>
         </div>
     </div>
 
-    <div id="auth-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex justify-center items-center">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
-            <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h2 class="text-2xl font-bold bebas-font">Accesso Admin</h2>
-                <button id="close-auth-modal" class="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
-            </div>
+    <div id="admin-auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Accesso Admin</h2>
             <form id="admin-login-form">
-                <div class="mb-4">
-                    <label for="admin-username" class="block text-gray-700">Username:</label>
-                    <input type="text" id="admin-username" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
-                </div>
-                <div class="mb-4">
-                    <label for="admin-password" class="block text-gray-700">Password:</label>
-                    <input type="password" id="admin-password" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
-                </div>
-                <button type="submit" id="admin-submit-btn" class="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 bebas-font comic-button">Accedi</button>
+                <input type="text" id="admin-username" placeholder="Username" required>
+                <input type="password" id="admin-password" placeholder="Password" required>
+                <button type="submit">Accedi</button>
             </form>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const pageContent = document.getElementById('page-content');
-            const cartItemsContainer = document.getElementById('cart-items');
-            const cartTotalElement = document.getElementById('cart-total');
-            const cartCountElement = document.getElementById('cart-count');
-            const productModal = document.getElementById('product-modal');
+            const mainContent = document.getElementById('main-content');
             const cartModal = document.getElementById('cart-modal');
-            const authModal = document.getElementById('auth-modal');
+            const productModal = document.getElementById('product-modal');
+            const adminAuthModal = document.getElementById('admin-auth-modal');
+            const cartBtn = document.getElementById('cart-btn');
+            const cartItemsList = document.getElementById('cart-items');
+            const cartTotalSpan = document.getElementById('cart-total');
+            const cartCountSpan = document.getElementById('cart-count');
 
-            // --- Costanti per Admin (da spostare in un file .env o database in produzione) ---
+            const API_BASE = "";
+
             const ADMIN_USERNAME = "admin";
             const ADMIN_PASSWORD = "password123";
 
-            // --- API di base ---
-            const API_BASE = ""; // Percorso relativo
+            let currentCart = { items: [] };
 
-            // Funzione per mostrare un messaggio di allerta (per feedback utente)
-            const showAlert = (message) => {
-                alert(message);
+            // Funzioni di visualizzazione
+            const showPage = (page) => {
+                mainContent.innerHTML = '';
+                if (page === 'home') showHome();
+                if (page === 'booking') showBooking();
+                if (page === 'admin') showAdminAuth();
             };
 
-            // Funzione per il rendering delle pagine
-            const displayHome = () => {
-                pageContent.innerHTML = `
-                    <section class="text-center my-12">
-                        <h1 class="text-6xl text-blue-800 font-bold bebas-font comic-border p-4 inline-block transform -rotate-2">Benvenuto da MANBAGA!</h1>
-                        <p class="mt-4 text-xl text-gray-700">Il tuo negozio di fiducia per Manga, Fumetti e Giochi.</p>
-                    </section>
-                    
-                    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 my-12">
-                        <div class="bg-white p-6 rounded-lg shadow-lg comic-border hover:transform hover:scale-105 transition-transform duration-300">
-                            <h3 class="text-3xl bebas-font text-blue-600 mb-2">Manga & Fumetti</h3>
-                            <p class="text-gray-600">Esplora la nostra vasta collezione di storie a fumetti.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-lg comic-border hover:transform hover:scale-105 transition-transform duration-300">
-                            <h3 class="text-3xl bebas-font text-blue-600 mb-2">Giochi da Tavolo</h3>
-                            <p class="text-gray-600">Scopri nuove avventure con i nostri giochi da tavolo.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-lg comic-border hover:transform hover:scale-105 transition-transform duration-300">
-                            <h3 class="text-3xl bebas-font text-blue-600 mb-2">Prenota il Tavolo</h3>
-                            <p class="text-gray-600">Vieni a trovarci e prenota un tavolo per giocare con gli amici.</p>
-                        </div>
-                    </section>
-
-                    <section id="featured-products" class="my-12">
-                        <h2 class="text-4xl text-center text-blue-800 bebas-font mb-8">Prodotti in Evidenza</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="featured-products-grid">
-                            </div>
-                    </section>
-                `;
-                // Carica i prodotti in evidenza
-                loadFeaturedProducts();
-            };
-
-            const loadFeaturedProducts = async () => {
-                const grid = document.getElementById('featured-products-grid');
-                grid.innerHTML = '<div class="col-span-full text-center text-gray-500">Caricamento prodotti...</div>';
-                
+            const showHome = async () => {
+                mainContent.innerHTML = '<h2>Prodotti in evidenza</h2><div class="product-grid" id="featured-products"></div>';
+                const featuredGrid = document.getElementById('featured-products');
+                featuredGrid.innerHTML = 'Caricamento...';
                 try {
                     const response = await fetch(`${API_BASE}/api/products/all`);
                     const allProducts = await response.json();
-                    
-                    const featured = allProducts.manga.slice(0, 4); // Mostra i primi 4 manga come evidenza
-                    grid.innerHTML = '';
-                    featured.forEach(product => {
-                        grid.innerHTML += createProductCard(product, 'manga');
-                    });
+                    const featured = allProducts.manga.slice(0, 4); // Mostra i primi 4 manga come prodotti in evidenza
+                    featuredGrid.innerHTML = '';
+                    featured.forEach(product => featuredGrid.innerHTML += createProductCard(product, 'manga'));
                 } catch (error) {
                     console.error('Errore nel caricamento dei prodotti:', error);
-                    grid.innerHTML = `<div class="col-span-full text-center text-red-500">
-                        <p>Errore nel caricamento dei prodotti. Prova a ricaricare la pagina.</p>
-                        <p><strong>Causa probabile su Vercel:</strong> Il backend non è connesso a un database persistente.</p>
-                    </div>`;
+                    featuredGrid.innerHTML = 'Errore nel caricamento dei prodotti.';
                 }
             };
-            
-            const displayProducts = async (category) => {
-                pageContent.innerHTML = `<h2 class="text-4xl text-center text-blue-800 bebas-font mb-8">${category.charAt(0).toUpperCase() + category.slice(1)}</h2>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="products-grid">
-                                            </div>`;
-                const grid = document.getElementById('products-grid');
-                grid.innerHTML = '<div class="col-span-full text-center text-gray-500">Caricamento prodotti...</div>';
 
+            const showCategory = async (category) => {
+                mainContent.innerHTML = `<h2>${category.toUpperCase()}</h2><div class="product-grid" id="product-list"></div>`;
+                const productList = document.getElementById('product-list');
+                productList.innerHTML = 'Caricamento...';
                 try {
                     const response = await fetch(`${API_BASE}/api/products/all`);
                     const allProducts = await response.json();
                     const products = allProducts[category] || [];
-                    
-                    grid.innerHTML = '';
-                    if (products.length > 0) {
-                        products.forEach(product => {
-                            grid.innerHTML += createProductCard(product, category);
-                        });
+                    productList.innerHTML = '';
+                    if (products.length === 0) {
+                        productList.innerHTML = 'Nessun prodotto trovato in questa categoria.';
                     } else {
-                        grid.innerHTML = '<div class="col-span-full text-center text-gray-500">Nessun prodotto in questa categoria.</div>';
+                        products.forEach(product => productList.innerHTML += createProductCard(product, category));
                     }
                 } catch (error) {
                     console.error('Errore nel caricamento dei prodotti:', error);
-                    grid.innerHTML = `<div class="col-span-full text-center text-red-500">
-                        <p>Errore nel caricamento dei prodotti. Prova a ricaricare la pagina.</p>
-                        <p><strong>Causa probabile su Vercel:</strong> Il backend non è connesso a un database persistente.</p>
-                    </div>`;
+                    productList.innerHTML = 'Errore nel caricamento dei prodotti.';
                 }
             };
 
-            const displayBooking = async () => {
-                pageContent.innerHTML = `
-                    <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg comic-border">
-                        <h2 class="text-4xl bebas-font text-center text-blue-800 mb-6">Prenota il tuo Tavolo</h2>
-                        <form id="booking-form" class="space-y-4">
-                            <div>
-                                <label for="booking-name" class="block text-gray-700 font-bold">Nome:</label>
-                                <input type="text" id="booking-name" required class="w-full mt-1 p-2 border border-gray-300 rounded-md">
-                            </div>
-                            <div>
-                                <label for="booking-date" class="block text-gray-700 font-bold">Data:</label>
-                                <input type="date" id="booking-date" required class="w-full mt-1 p-2 border border-gray-300 rounded-md">
-                            </div>
-                            <div>
-                                <label for="booking-time" class="block text-gray-700 font-bold">Ora:</label>
-                                <select id="booking-time" required class="w-full mt-1 p-2 border border-gray-300 rounded-md">
-                                    <option value="">Seleziona un orario</option>
-                                    <option value="15:00">15:00 - 17:00</option>
-                                    <option value="17:00">17:00 - 19:00</option>
-                                    <option value="19:00">19:00 - 21:00</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="booking-table" class="block text-gray-700 font-bold">Numero Tavolo:</label>
-                                <input type="number" id="booking-table" min="1" max="10" required class="w-full mt-1 p-2 border border-gray-300 rounded-md">
-                            </div>
-                            <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded-lg bebas-font comic-button">Conferma Prenotazione</button>
-                        </form>
-                        
-                        <div id="booking-list" class="mt-8">
-                            <h3 class="text-2xl bebas-font text-blue-700">Le tue prenotazioni:</h3>
-                            <div id="bookings-container" class="mt-4 space-y-4"></div>
-                        </div>
-                    </div>
+            const showBooking = async () => {
+                mainContent.innerHTML = `
+                    <h2>Prenota il tuo Tavolo</h2>
+                    <form id="booking-form">
+                        <input type="text" id="booking-name" placeholder="Nome" required>
+                        <input type="date" id="booking-date" required>
+                        <input type="time" id="booking-time" required>
+                        <input type="number" id="booking-table" placeholder="Numero Tavolo" min="1" required>
+                        <button type="submit">Conferma Prenotazione</button>
+                    </form>
+                    <h3>Le tue prenotazioni</h3>
+                    <div id="booking-list"></div>
                 `;
                 document.getElementById('booking-form').addEventListener('submit', handleBookingSubmit);
                 loadBookings();
             };
 
-            const displayAdminPanel = () => {
-                pageContent.innerHTML = `
-                    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg comic-border">
-                        <h2 class="text-4xl bebas-font text-center text-blue-800 mb-6">Pannello Admin</h2>
+            const showAdminAuth = () => {
+                adminAuthModal.style.display = 'block';
+            };
 
-                        <div class="mb-8">
-                            <h3 class="text-2xl bebas-font text-blue-700 mb-4">Aggiungi Nuovo Prodotto</h3>
-                            <form id="add-product-form" class="space-y-4">
-                                <input type="text" id="product-title-input" placeholder="Titolo" required class="w-full p-2 border rounded-md">
-                                <textarea id="product-description-input" placeholder="Descrizione" class="w-full p-2 border rounded-md"></textarea>
-                                <input type="text" id="product-price-input" placeholder="Prezzo (es. 15,99€)" required class="w-full p-2 border rounded-md">
-                                <input type="text" id="product-image-url-input" placeholder="URL Immagine Principale" required class="w-full p-2 border rounded-md">
-                                <select id="product-category-input" required class="w-full p-2 border rounded-md">
-                                    <option value="">Seleziona Categoria</option>
-                                    <option value="manga">Manga</option>
-                                    <option value="fumettiAmericani">Fumetti Americani</option>
-                                    <option value="tcg">TCG</option>
-                                    <option value="giochiTavolo">Giochi da Tavolo</option>
-                                    <option value="actionFigure">Action Figure</option>
-                                    <option value="funkoPop">Funko Pop!</option>
-                                    <option value="libri">Libri</option>
-                                </select>
-                                <button type="submit" class="w-full bg-green-500 text-white p-3 rounded-lg bebas-font comic-button">Aggiungi Prodotto</button>
-                            </form>
-                        </div>
-                        
-                        <div>
-                            <h3 class="text-2xl bebas-font text-blue-700 mb-4">Gestisci Prodotti Esistenti</h3>
-                            <div class="flex items-center space-x-4 mb-4">
-                                <label for="admin-category-filter" class="bebas-font">Filtra per Categoria:</label>
-                                <select id="admin-category-filter" class="p-2 border rounded-md">
-                                    <option value="all">Tutti</option>
-                                    <option value="manga">Manga</option>
-                                    <option value="fumettiAmericani">Fumetti Americani</option>
-                                    <option value="tcg">TCG</option>
-                                    <option value="giochiTavolo">Giochi da Tavolo</option>
-                                    <option value="actionFigure">Action Figure</option>
-                                    <option value="funkoPop">Funko Pop!</option>
-                                    <option value="libri">Libri</option>
-                                </select>
-                            </div>
-                            <div id="admin-products-list" class="space-y-4">
-                                </div>
-                        </div>
-
-                    </div>
+            const showAdminPanel = () => {
+                adminAuthModal.style.display = 'none';
+                mainContent.innerHTML = `
+                    <h2>Pannello Admin</h2>
+                    <section>
+                        <h3>Aggiungi Nuovo Prodotto</h3>
+                        <form id="add-product-form">
+                            <input type="text" id="product-title-input" placeholder="Titolo" required>
+                            <textarea id="product-description-input" placeholder="Descrizione"></textarea>
+                            <input type="text" id="product-price-input" placeholder="Prezzo (es. 15,99€)" required>
+                            <input type="text" id="product-image-url-input" placeholder="URL Immagine Principale" required>
+                            <select id="product-category-input" required>
+                                <option value="">Seleziona Categoria</option>
+                                <option value="manga">Manga</option>
+                                <option value="fumettiAmericani">Fumetti Americani</option>
+                                <option value="tcg">TCG</option>
+                                <option value="giochiTavolo">Giochi da Tavolo</option>
+                                <option value="actionFigure">Action Figure</option>
+                                <option value="funkoPop">Funko Pop!</option>
+                                <option value="libri">Libri</option>
+                            </select>
+                            <button type="submit">Aggiungi Prodotto</button>
+                        </form>
+                    </section>
+                    <section>
+                        <h3>Gestisci Prodotti Esistenti</h3>
+                        <select id="admin-category-filter">
+                            <option value="all">Tutti</option>
+                            <option value="manga">Manga</option>
+                            <option value="fumettiAmericani">Fumetti Americani</option>
+                            <option value="tcg">TCG</option>
+                            <option value="giochiTavolo">Giochi da Tavolo</option>
+                            <option value="actionFigure">Action Figure</option>
+                            <option value="funkoPop">Funko Pop!</option>
+                            <option value="libri">Libri</option>
+                        </select>
+                        <ul id="admin-products-list"></ul>
+                    </section>
                 `;
                 document.getElementById('add-product-form').addEventListener('submit', handleAddProduct);
                 document.getElementById('admin-category-filter').addEventListener('change', loadAdminProducts);
                 loadAdminProducts();
             };
 
+            // Funzioni per l'interazione con l'API
             const createProductCard = (product, category) => {
                 return `
-                    <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col items-center p-4 text-center comic-border">
-                        <img src="${product.mainImageUrl}" alt="${product.title}" class="w-full h-64 object-cover rounded-md mb-4 cursor-pointer" onclick="showProductDetails('${product.id}', '${category}')">
-                        <h3 class="text-xl font-bold bebas-font">${product.title}</h3>
-                        <p class="text-blue-500 text-lg bebas-font mt-2">${product.price}</p>
-                        <button class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg bebas-font comic-button add-to-cart-btn" data-id="${product.id}" data-category="${category}" data-title="${product.title}" data-price="${product.price}" data-image="${product.mainImageUrl}">
-                            Aggiungi al Carrello
-                        </button>
+                    <div class="product-card">
+                        <img src="${product.mainImageUrl}" alt="${product.title}" onclick="showProductDetails('${product.id}', '${category}')">
+                        <h3>${product.title}</h3>
+                        <p>${product.price}</p>
+                        <button class="add-to-cart" data-id="${product.id}" data-category="${category}" data-title="${product.title}" data-price="${product.price}" data-image="${product.mainImageUrl}">Aggiungi al carrello</button>
                     </div>
                 `;
             };
@@ -418,228 +403,118 @@
                 try {
                     const response = await fetch(`${API_BASE}/api/products/${category}/${id}`);
                     const product = await response.json();
-                    
-                    const detailsContent = document.getElementById('product-details-content');
-                    const titleElement = document.getElementById('product-title');
-                    
-                    if (product && !product.error) {
-                        titleElement.textContent = product.title;
-                        detailsContent.innerHTML = `
-                            <div class="md:flex md:space-x-8">
-                                <div class="md:w-1/2">
-                                    <img src="${product.mainImageUrl}" alt="${product.title}" class="w-full rounded-md shadow-md">
-                                </div>
-                                <div class="md:w-1/2 mt-4 md:mt-0">
-                                    <p class="text-xl font-bold text-blue-500 bebas-font mb-4">${product.price}</p>
-                                    <p class="text-gray-700">${product.description}</p>
-                                    <button class="mt-6 bg-blue-500 text-white px-6 py-3 rounded-lg bebas-font comic-button add-to-cart-btn" data-id="${product.id}" data-category="${category}" data-title="${product.title}" data-price="${product.price}" data-image="${product.mainImageUrl}">
-                                        Aggiungi al Carrello
-                                    </button>
-                                </div>
-                            </div>
+                    if (product) {
+                        const detailsHtml = `
+                            <img src="${product.mainImageUrl}" alt="${product.title}" style="max-width: 100%;">
+                            <h2>${product.title}</h2>
+                            <p>${product.description}</p>
+                            <p>Prezzo: ${product.price}</p>
+                            <button class="add-to-cart" data-id="${product.id}" data-category="${category}" data-title="${product.title}" data-price="${product.price}" data-image="${product.mainImageUrl}">Aggiungi al carrello</button>
                         `;
-                        productModal.classList.remove('hidden');
+                        document.getElementById('product-details').innerHTML = detailsHtml;
+                        productModal.style.display = 'block';
                     } else {
-                        showAlert('Dettagli del prodotto non trovati.');
+                        alert('Prodotto non trovato!');
                     }
                 } catch (error) {
-                    console.error('Errore nel caricamento dei dettagli prodotto:', error);
-                    showAlert('Impossibile caricare i dettagli del prodotto.');
+                    console.error('Errore nel recupero dei dettagli del prodotto:', error);
                 }
-            };
-
-            const updateCartCount = (count) => {
-                cartCountElement.textContent = count;
             };
 
             const updateCart = async () => {
-                try {
-                    const userId = "test-user"; // ID utente fittizio per demo
-                    const response = await fetch(`${API_BASE}/api/cart/${userId}`);
-                    const cart = await response.json();
-                    
-                    cartItemsContainer.innerHTML = '';
-                    let total = 0;
-                    
-                    if (cart.items && cart.items.length > 0) {
-                        cart.items.forEach(item => {
-                            const itemTotal = parseFloat(item.price.replace('€', '').replace(',', '.')) * item.quantity;
-                            total += itemTotal;
-                            cartItemsContainer.innerHTML += `
-                                <div class="flex items-center justify-between border-b pb-2">
-                                    <div class="flex items-center">
-                                        <img src="${item.image}" alt="${item.title}" class="w-16 h-16 object-cover rounded mr-4">
-                                        <div>
-                                            <h4 class="font-bold">${item.title}</h4>
-                                            <p>${item.price} x ${item.quantity}</p>
-                                        </div>
-                                    </div>
-                                    <button class="text-red-500 hover:text-red-700 remove-from-cart-btn" data-id="${item.id}">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    </button>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        cartItemsContainer.innerHTML = '<p class="text-center text-gray-500">Il carrello è vuoto.</p>';
-                    }
-                    
-                    cartTotalElement.textContent = `${total.toFixed(2)}€`;
-                    updateCartCount(cart.items ? cart.items.length : 0);
-                    
-                } catch (error) {
-                    console.error('Errore nel recupero del carrello:', error);
-                    showAlert('Impossibile caricare il carrello. Prova a ricaricare.');
-                }
-            };
-            
-            const handleAddToCart = async (event) => {
-                const button = event.target.closest('.add-to-cart-btn');
-                const { id, category, title, price, image } = button.dataset;
                 const userId = "test-user";
-                
                 try {
                     const response = await fetch(`${API_BASE}/api/cart/${userId}`);
-                    const cart = await response.json();
+                    currentCart = await response.json();
                     
-                    const existingItem = cart.items.find(item => item.id == id);
-                    if (existingItem) {
-                        existingItem.quantity += 1;
-                    } else {
-                        cart.items.push({ id, category, title, price, image, quantity: 1 });
-                    }
-                    
-                    await fetch(`${API_BASE}/api/cart/${userId}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(cart)
+                    cartItemsList.innerHTML = '';
+                    let total = 0;
+                    currentCart.items.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = `${item.title} x${item.quantity} - ${item.price}`;
+                        const removeBtn = document.createElement('button');
+                        removeBtn.textContent = 'Rimuovi';
+                        removeBtn.onclick = () => handleRemoveFromCart(item.id);
+                        li.appendChild(removeBtn);
+                        cartItemsList.appendChild(li);
+                        total += parseFloat(item.price.replace('€', '').replace(',', '.')) * item.quantity;
                     });
                     
-                    updateCart();
-                    showAlert('Prodotto aggiunto al carrello!');
-                    
+                    cartTotalSpan.textContent = `${total.toFixed(2)}€`;
+                    cartCountSpan.textContent = currentCart.items.length;
                 } catch (error) {
-                    console.error('Errore nell\'aggiunta al carrello:', error);
-                    showAlert('Impossibile aggiungere il prodotto al carrello.');
+                    console.error('Errore nel recupero del carrello:', error);
                 }
+            };
+
+            const handleAddToCart = async (product) => {
+                const userId = "test-user";
+                let item = currentCart.items.find(i => i.id === product.id);
+                if (item) {
+                    item.quantity++;
+                } else {
+                    currentCart.items.push({ ...product, quantity: 1 });
+                }
+                await fetch(`${API_BASE}/api/cart/${userId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(currentCart)
+                });
+                updateCart();
+            };
+
+            const handleRemoveFromCart = async (productId) => {
+                const userId = "test-user";
+                currentCart.items = currentCart.items.filter(item => item.id !== productId);
+                await fetch(`${API_BASE}/api/cart/${userId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(currentCart)
+                });
+                updateCart();
             };
 
             const handleCheckout = async () => {
                 const userId = "test-user";
-                try {
-                    await fetch(`${API_BASE}/api/cart/checkout/${userId}`, { method: 'POST' });
-                    updateCart();
-                    showAlert('Checkout completato! Il carrello è stato svuotato.');
-                    cartModal.classList.add('hidden');
-                } catch (error) {
-                    console.error('Errore nel checkout:', error);
-                    showAlert('Si è verificato un errore durante il checkout.');
-                }
+                await fetch(`${API_BASE}/api/cart/checkout/${userId}`, { method: 'POST' });
+                updateCart();
+                alert('Checkout completato!');
+                cartModal.style.display = 'none';
             };
 
-            const handleRemoveFromCart = async (event) => {
-                const button = event.target.closest('.remove-from-cart-btn');
-                const { id } = button.dataset;
-                const userId = "test-user";
-                
-                try {
-                    const response = await fetch(`${API_BASE}/api/cart/${userId}`);
-                    const cart = await response.json();
-                    
-                    cart.items = cart.items.filter(item => item.id != id);
-                    
-                    await fetch(`${API_BASE}/api/cart/${userId}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(cart)
-                    });
-                    
-                    updateCart();
-                } catch (error) {
-                    console.error('Errore nella rimozione dal carrello:', error);
-                    showAlert('Impossibile rimuovere l\'articolo.');
-                }
-            };
-            
             const handleBookingSubmit = async (e) => {
                 e.preventDefault();
                 const booking = {
                     name: document.getElementById('booking-name').value,
                     date: document.getElementById('booking-date').value,
                     time: document.getElementById('booking-time').value,
-                    tableId: document.getElementById('booking-table').value,
+                    tableId: document.getElementById('booking-table').value
                 };
-                
-                try {
-                    const response = await fetch(`${API_BASE}/api/bookings/add`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(booking)
-                    });
-                    const result = await response.json();
-                    if (response.ok) {
-                        showAlert('Prenotazione confermata con successo!');
-                        document.getElementById('booking-form').reset();
-                        loadBookings();
-                    } else {
-                        showAlert(result.error || 'Errore nella prenotazione.');
-                    }
-                } catch (error) {
-                    console.error('Errore nella prenotazione:', error);
-                    showAlert('Errore di connessione. Riprova più tardi.');
-                }
+                await fetch(`${API_BASE}/api/bookings/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(booking)
+                });
+                alert('Prenotazione effettuata!');
+                loadBookings();
             };
 
             const loadBookings = async () => {
-                const container = document.getElementById('bookings-container');
-                container.innerHTML = 'Caricamento prenotazioni...';
-                try {
-                    const response = await fetch(`${API_BASE}/api/bookings/available`);
-                    const bookings = await response.json();
-                    container.innerHTML = '';
-                    if (bookings.length > 0) {
-                        bookings.forEach(booking => {
-                            container.innerHTML += `
-                                <div class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-                                    <div>
-                                        <p><strong>Nome:</strong> ${booking.name}</p>
-                                        <p><strong>Data:</strong> ${booking.date}</p>
-                                        <p><strong>Ora:</strong> ${booking.time}</p>
-                                        <p><strong>Tavolo:</strong> ${booking.tableId}</p>
-                                    </div>
-                                    <button class="text-red-500 hover:text-red-700 comic-button-small" onclick="cancelBooking('${booking.tableId}', '${booking.date}', '${booking.time}')">
-                                        Annulla
-                                    </button>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        container.innerHTML = '<p class="text-gray-500">Nessuna prenotazione trovata.</p>';
-                    }
-                } catch (error) {
-                    console.error('Errore nel caricamento delle prenotazioni:', error);
-                    container.innerHTML = `<div class="text-red-500">
-                        <p>Errore nel caricamento delle prenotazioni.</p>
-                        <p><strong>Causa probabile su Vercel:</strong> Il backend non è connesso a un database persistente.</p>
-                    </div>`;
-                }
+                const bookingList = document.getElementById('booking-list');
+                const response = await fetch(`${API_BASE}/api/bookings/available`);
+                const bookings = await response.json();
+                bookingList.innerHTML = bookings.map(b => `
+                    <div>
+                        <p>Nome: ${b.name}, Data: ${b.date}, Ora: ${b.time}, Tavolo: ${b.tableId}</p>
+                        <button onclick="cancelBooking('${b.tableId}', '${b.date}', '${b.time}')">Annulla</button>
+                    </div>
+                `).join('');
             };
 
             const cancelBooking = async (tableId, date, time) => {
-                if (!confirm('Sei sicuro di voler cancellare questa prenotazione?')) return;
-                try {
-                    const response = await fetch(`${API_BASE}/api/bookings/cancel/${tableId}/${date}/${time}`, { method: 'DELETE' });
-                    const result = await response.json();
-                    if (response.ok) {
-                        showAlert('Prenotazione cancellata con successo.');
-                        loadBookings();
-                    } else {
-                        showAlert(result.error || 'Errore nella cancellazione.');
-                    }
-                } catch (error) {
-                    console.error('Errore nella cancellazione:', error);
-                    showAlert('Errore di connessione. Riprova più tardi.');
-                }
+                await fetch(`${API_BASE}/api/bookings/cancel/${tableId}/${date}/${time}`, { method: 'DELETE' });
+                alert('Prenotazione cancellata!');
+                loadBookings();
             };
 
             const handleAddProduct = async (e) => {
@@ -652,162 +527,78 @@
                     category: document.getElementById('product-category-input').value,
                     additionalImages: []
                 };
-
-                try {
-                    const response = await fetch(`${API_BASE}/api/products`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(newProduct)
-                    });
-                    const result = await response.json();
-                    if (response.ok) {
-                        showAlert('Prodotto aggiunto con successo!');
-                        document.getElementById('add-product-form').reset();
-                        loadAdminProducts();
-                    } else {
-                        showAlert(result.error || 'Errore nell\'aggiunta del prodotto.');
-                    }
-                } catch (error) {
-                    console.error('Errore nell\'aggiunta del prodotto:', error);
-                    showAlert('Errore di connessione. Riprova più tardi.');
-                }
+                await fetch(`${API_BASE}/api/products`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newProduct)
+                });
+                alert('Prodotto aggiunto!');
+                document.getElementById('add-product-form').reset();
+                loadAdminProducts();
             };
 
             const loadAdminProducts = async () => {
                 const list = document.getElementById('admin-products-list');
                 const categoryFilter = document.getElementById('admin-category-filter').value;
-                list.innerHTML = 'Caricamento prodotti...';
-                
-                try {
-                    const response = await fetch(`${API_BASE}/api/products/all`);
-                    const allProducts = await response.json();
-                    
-                    list.innerHTML = '';
-                    const categories = categoryFilter === 'all' ? Object.keys(allProducts) : [categoryFilter];
-                    
-                    let hasProducts = false;
-                    categories.forEach(category => {
-                        const products = allProducts[category] || [];
-                        if (products.length > 0) {
-                            hasProducts = true;
-                            products.forEach(product => {
-                                list.innerHTML += `
-                                    <div class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-                                        <span>${product.title} (${category})</span>
-                                        <button class="text-red-500 hover:text-red-700 comic-button-small" onclick="deleteProduct('${product.id}', '${category}')">
-                                            Elimina
-                                        </button>
-                                    </div>
-                                `;
-                            });
-                        }
-                    });
-
-                    if (!hasProducts) {
-                        list.innerHTML = '<p class="text-gray-500">Nessun prodotto trovato in questa categoria.</p>';
-                    }
-                } catch (error) {
-                    console.error('Errore nel caricamento dei prodotti admin:', error);
-                    list.innerHTML = `<div class="text-red-500">
-                        <p>Errore nel caricamento dei prodotti. Prova a ricaricare la pagina.</p>
-                        <p><strong>Causa probabile su Vercel:</strong> Il backend non è connesso a un database persistente.</p>
-                    </div>`;
+                const response = await fetch(`${API_BASE}/api/products/all`);
+                const allProducts = await response.json();
+                let productsToDisplay = [];
+                if (categoryFilter === 'all') {
+                    Object.values(allProducts).forEach(arr => productsToDisplay = productsToDisplay.concat(arr));
+                } else {
+                    productsToDisplay = allProducts[categoryFilter] || [];
                 }
+
+                list.innerHTML = productsToDisplay.map(p => `
+                    <li>${p.title} (${p.category}) <button onclick="deleteProduct('${p.id}', '${p.category}')">Elimina</button></li>
+                `).join('');
             };
 
             const deleteProduct = async (id, category) => {
-                if (!confirm(`Sei sicuro di voler eliminare questo prodotto (${id})?`)) return;
-                try {
-                    const response = await fetch(`${API_BASE}/api/products/${category}/${id}`, { method: 'DELETE' });
-                    const result = await response.json();
-                    if (response.ok) {
-                        showAlert('Prodotto eliminato con successo!');
-                        loadAdminProducts();
-                    } else {
-                        showAlert(result.error || 'Errore nell\'eliminazione del prodotto.');
-                    }
-                } catch (error) {
-                    console.error('Errore nell\'eliminazione del prodotto:', error);
-                    showAlert('Errore di connessione. Riprova più tardi.');
-                }
+                await fetch(`${API_BASE}/api/products/${category}/${id}`, { method: 'DELETE' });
+                alert('Prodotto eliminato!');
+                loadAdminProducts();
             };
 
-            // Event listener per la navigazione
-            document.querySelectorAll('[data-page]').forEach(el => {
-                el.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const page = e.target.dataset.page;
-                    if (page === 'home') displayHome();
-                    else if (page === 'booking') displayBooking();
-                    else if (page === 'admin') authModal.classList.remove('hidden');
-                });
-            });
-
-            // Event listener per la navigazione del menu a tendina Prodotti
-            document.querySelectorAll('.dropdown-item').forEach(el => {
-                el.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const category = e.target.dataset.category;
-                    displayProducts(category);
-                });
-            });
-
-            // Gestione dei modali
-            document.getElementById('cart-btn').addEventListener('click', () => {
-                cartModal.classList.remove('hidden');
-                updateCart();
-            });
-            document.getElementById('close-cart-modal').addEventListener('click', () => cartModal.classList.add('hidden'));
-            document.getElementById('close-product-modal').addEventListener('click', () => productModal.classList.add('hidden'));
-            document.getElementById('close-auth-modal').addEventListener('click', () => authModal.classList.add('hidden'));
-            window.showProductDetails = showProductDetails; // Rendi la funzione globale
-
-            // Gestione del checkout
-            document.getElementById('checkout-btn').addEventListener('click', handleCheckout);
-
-            // Gestione dell'aggiunta/rimozione al carrello (event delegation)
-            document.addEventListener('click', (event) => {
-                if (event.target.closest('.add-to-cart-btn')) {
-                    handleAddToCart(event);
-                }
-                if (event.target.closest('.remove-from-cart-btn')) {
-                    handleRemoveFromCart(event);
-                }
-            });
-
-            // Gestione del menu mobile
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const mobileProductsBtn = document.getElementById('mobile-products-btn');
-            const mobileProductsSubmenu = document.getElementById('mobile-products-submenu');
-            const mobileProductsArrow = document.getElementById('mobile-products-arrow');
-
-            mobileMenuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-
-            mobileProductsBtn.addEventListener('click', () => {
-                mobileProductsSubmenu.classList.toggle('hidden');
-                mobileProductsArrow.classList.toggle('rotate-180');
-            });
-
-            // Gestione del login Admin
-            document.getElementById('admin-submit-btn').addEventListener('click', (e) => {
+            // Event Listeners
+            document.getElementById('admin-login-form').addEventListener('submit', (e) => {
                 e.preventDefault();
-                const username = document.getElementById('admin-username').value;
-                const password = document.getElementById('admin-password').value;
-
-                if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                    document.getElementById('auth-modal').classList.add('hidden');
-                    displayAdminPanel();
+                if (document.getElementById('admin-username').value === ADMIN_USERNAME && document.getElementById('admin-password').value === ADMIN_PASSWORD) {
+                    showAdminPanel();
                 } else {
-                    showAlert('Credenziali admin errate. Riprova.');
+                    alert('Credenziali errate');
                 }
             });
 
-            // --- Inizializzazione ---
-            displayHome();
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('close-button')) {
+                    e.target.closest('.modal').style.display = 'none';
+                } else if (e.target.classList.contains('add-to-cart')) {
+                    const productData = e.target.dataset;
+                    handleAddToCart({
+                        id: productData.id,
+                        title: productData.title,
+                        price: productData.price,
+                        image: productData.image,
+                    });
+                }
+            });
+
+            cartBtn.onclick = () => {
+                cartModal.style.display = 'block';
+                updateCart();
+            };
+            document.getElementById('checkout-btn').onclick = handleCheckout;
+            window.showProductDetails = showProductDetails;
+            window.cancelBooking = cancelBooking;
+            window.deleteProduct = deleteProduct;
+
+            showHome();
+            updateCart();
         });
     </script>
+
 </body>
+
 </html>
+
